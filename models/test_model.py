@@ -7,9 +7,11 @@ class Test(db.Model):
     test_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     name2 = db.Column(db.String())
-    def __init__(self, name, name2):
+    age = db.Column(db.Integer)
+    def __init__(self, name, name2, age):
         self.name = name
         self.name2 = name2
+        self.age = age
 
     def __repr__(self):
         return '<id {}>'.format(self.test_id)

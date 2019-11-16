@@ -8,7 +8,9 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-#from online-grocery-store.models.test_model import Test
+#import pdb
+#pdb.set_trace()
+import models.test_model as models
 
 @app.route('/')
 def hello():
@@ -17,13 +19,13 @@ def hello():
 @app.route('/add-test')
 def add():
     try:
-        test=Test(
+        test=models.Test(
             name="name",
             name2="name2",
         )
         db.session.add(test)
         db.session.commit()
-        return "Test added. test id={}".format(test.id)
+        return "Test added. test id={}".format(test.test_id)
     except Exception as e:
 	    return(str(e))
 
