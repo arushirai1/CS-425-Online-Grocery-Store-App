@@ -105,7 +105,7 @@ class credit_card(db.Model):
     customer_ID =db.Column(db.Integer,db.ForeignKey(Customer.customer_ID), primary_key=True)
     card_number=db.Column(db.Integer, primary_key=True)
     street_address=db.Column(db.String())
-    city=dp.Column(db.String())
+    city=db.Column(db.String())
     state=db.Column(db.String())
     zip_code=db.Column(db.Integer)
     
@@ -135,7 +135,7 @@ class pricing(db.Model):
 
     product_ID =db.Column(db.Integer, db.ForeignKey(Customer.customer_ID),primary_key=True)
     state=db.Column(db.String())
-    price=db.Column(db.Double)
+    price=db.Column(db.Numeric)
     
     def __init__ (self,customer_ID,card_number,street_address,city,zip_code):
         self.customer_ID=customer_ID
