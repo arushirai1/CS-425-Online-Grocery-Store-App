@@ -8,8 +8,6 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-#import pdb
-#pdb.set_trace()
 import models.test_model as models
 
 @app.route('/')
