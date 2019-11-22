@@ -139,6 +139,89 @@ class Product(db.Model):
             'nutritional_value': self.nutritional_value
         }
 
+class Warehouse(db.Model):
+    __tablename__ = 'warehouse'
+
+    warehouse_ID = db.Column(db.Integer, primary_key=True)
+    capacity = db.Column(db.Numeric)
+    street_address = db.Column(db.String())
+    city = db.Column(db.String())
+    state = db.Column(db.String())
+    zip_code = db.Column(db.Integer)
+
+    def __init__(self, warehouse_ID, capacity, street_address, city, state, zip_code):
+        self.warehouse_ID = warehouse_ID
+        self.capacity = capacity
+        self.street_address = street_address
+        self.city = city
+        self.state = state
+        self.zip_code = zip_code
+
+    def __repr__(self):
+        return '<Product id {}>'.format(self.warehouse_ID)
+    
+    #used for JSON formatting    
+    def serialize(self):
+        return {
+            'warehouse_ID': self.warehouse_ID, 
+            'capacity': self.capacity,
+            'street_address': self.street_address,
+            'state': self.state,
+            'zip_code': self.zip_code,
+            
+        }
+
+class Order(db.Model):
+    __tablename__ = 'order'
+
+    order_ID = db.Column(db.Integer, primary_key=True)
+    customer_ID = db.Column(db.Integer,db.ForeignKey(Customer.customer_ID))
+    card_number = db.Column(db.Integer)
+    
+
+    def __init__(self, order_ID, customer_ID, card_number):
+        self.order_ID= order_ID
+        self.customer_ID = customer_ID
+        self.card_number = card_number
+        
+
+    def __repr__(self):
+        return '<Product id {}>'.format(self.product_ID)
+    
+    #used for JSON formatting    
+    def serialize(self):
+        return {
+            'order_ID': self.order_ID, 
+            'customer_ID': self.customer_ID,
+            'card_number': self.card_number,
+            
+        }
+
+class Stock(db.Model):
+    __tablename__ = 'stock'
+
+    warehouse_ID = db.Column(db.Integer, primary_key=True)
+    product_ID= db.Column(db.String())
+    quantity = db.Column(db.String())
+    
+
+    def __init__(self, warehouse_ID,product_ID,quantity):
+        self.warehouse_ID = warehouse_ID
+        self.product_ID = product_ID
+        self.quantity = quantity
+       
+
+    def __repr__(self):
+        return '<Product id {}>'.format(self.warehouse_ID)
+    
+    #used for JSON formatting    
+    def serialize(self):
+        return {
+            'warehouse_ID': self.warehouse_ID, 
+            'product_ID': self.product_ID,
+            'quantity': self.quantity,
+            
+        }
 
 
 class Shipping_to(db.Model):
