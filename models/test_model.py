@@ -68,6 +68,78 @@ class Customer(db.Model):
             'balance': self.balance,
         }
 
+class Staff(db.Model):
+    __tablename__ = 'staff'
+
+    staff_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key=True)
+    name = db.Column(db.String())
+    title = db.Column(db.String())
+    salary = db.Column(db.Integer)
+    address_line1 = db.Column(db.String())
+    city = db.Column(db.String())
+    state = db.Column(db.String())
+    zip_code = db.Column(db.Integer)
+
+    def __init__(self, staff_id, name, title, salary, address_line1, city, state, zip_code):
+        self.staff_id = staff_id
+        self.name = name
+        self.title = title
+        self.salary = salary
+        self.address_line1 = address_line1
+        self.city = city
+        self.state = state
+        self.zip_code = zip_code
+
+    def __repr__(self):
+        return '<Staff id {}>'.format(self.staff_id)
+    
+    #used for JSON formatting    
+    def serialize(self):
+        return {
+            'staff_id': self.staff_id, 
+            'name': self.name,
+            'title': self.title,
+            'salary': self.salary,
+            'balance': self.balance,
+            'address_line1': self.address_line1, 
+            'city': self.city,
+            'state': self.state,
+            'zip_code': self.zip_code
+        }
+
+class Product(db.Model):
+    __tablename__ = 'product'
+
+    product_ID = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    product_type = db.Column(db.String())
+    size = db.Column(db.Numeric)
+    alcohol_content = db.Column(db.Numeric)
+    nutritional_value = db.Column(db.Integer)
+
+    def __init__(self, product_ID, name, product_type, size, alcohol_content, nutritional_value):
+        self.product_ID = product_ID
+        self.name = name
+        self.product_type = product_type
+        self.size = size
+        self.alcohol_content = alcohol_content
+        self.nutritional_value = nutritional_value
+
+    def __repr__(self):
+        return '<Product id {}>'.format(self.product_ID)
+    
+    #used for JSON formatting    
+    def serialize(self):
+        return {
+            'product_ID': self.product_ID, 
+            'name': self.name,
+            'product_type': self.product_type,
+            'size': self.size,
+            'alcohol_content': self.alcohol_content,
+            'nutritional_value': self.nutritional_value
+        }
+
+
 
 class Shipping_to(db.Model):
 
