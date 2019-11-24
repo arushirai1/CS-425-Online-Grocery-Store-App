@@ -12,6 +12,14 @@ db = SQLAlchemy(app)
 import models.test_model as models
 import load_data
 import login_form
+import pdb
+
+db_methods.get_product_types(db)
+db_methods.get_product_info(db,'IL')
+db_methods.validate_login(db,'tpxyrc','3qkdWRHp')
+
+
+
 @app.route('/')
 def index():
     form = login_form.LoginForm()
