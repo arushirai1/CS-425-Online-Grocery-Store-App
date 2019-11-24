@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <script>
+    document.cookie = "db-backUrl=" + window.location.href+";";
+    </script>
     <h1>Login In</h1>
     <form action="/products" method="GET" novalidate>
         <p>

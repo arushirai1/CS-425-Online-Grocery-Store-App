@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+function goBack() {
+    backUrl = getCookie("db-backUrl");
+    console.log(backUrl)
+    window.location.replace(backUrl);
+}
+function update(product_id, quantity) {
+    console.log("Product Id: %d", product_id)
+    console.log("Quantity: %d", quantity)
+}
+</script>
+
+<script>
+totalPrice = 0;
+function addPrice(quantity, price) {
+    totalPrice += Math.round(100*quantity*price)/100;
+}
+function getTotal() {
+    totalPrice = Math.round(100*totalPrice)/100;
+    console.log(totalPrice);
+    document.write(totalPrice);
+}
+</script>
+
+<div style="margin-top: 10pt">
+    <button name="back" onclick="goBack()" type="reset" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-warning"> Exit Cart</button>
+
+    <h1>
+        Viewing Shopping Cart
+    </h1>
+</div>
+
+{% for item in cart %}
+<script> addPrice({{item.quantity | safe}}, {{item.price | safe}})</script>
+<div style="display: flex;">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title">{{item.product_name}}</h5>
+        </div>
+    </div>
+    <div class="form-group col-md-2">
+            <label for="inputQuantity">Quantity</label>
+            <input type="number" class="form-control" id="inputQuantity" value={{item.quantity}}>
+    </div>
+    <button name="Update Quantity" onclick="goBack()" type="reset" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update Quantity</button>
+    <button name="Delete" onclick="update({{item.product_id | safe}}, {{item.quantity | safe}})" type="reset" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>
+    <h2 style="margin: 10pt;">Price: {{item.price}}</h2>
+</div>
+{% endfor %}
+
+<h2> Total Price: </h2>
+<h2>$<script>getTotal();</script></h2>
+
+
+{% endblock %}

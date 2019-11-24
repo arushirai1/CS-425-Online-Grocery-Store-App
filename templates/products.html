@@ -5,10 +5,28 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <script>
+    function viewCart() {
+        document.cookie = "db-backUrl=" + window.location.href+";";
+        console.log("hello")
+        var xhr = new XMLHttpRequest();
+        console.log("1")
+
+        xhr.open("GET", '/view-cart', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+    
+        window.location.replace(window.location.origin+"/view-cart");
+        console.log("2");
+    }
+    </script>
     <h1 style="margin: 5px;">
         Hello {{username}}, here are products from {{ state }}
     </h1>
-    <button name="cart" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success">Modify Cart/Checkout</button>
+    <div>
+        <button name="cart" onclick="viewCart()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success">Modify Cart/Checkout</button>
+        <button name="logout" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary">Logout</button>
+    </div>
     <div style="display: flex;">
     {% for item in products %}
     <div class="card" style="width: 18rem;">

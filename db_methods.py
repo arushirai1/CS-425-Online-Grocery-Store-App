@@ -1,3 +1,4 @@
+
 import pdb
 
 def validate_login(db,username, password):
@@ -54,3 +55,4 @@ def get_product_info(db, stateArg):
 
 	print (products)
 #[{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
+
