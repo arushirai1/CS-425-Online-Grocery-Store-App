@@ -1,0 +1,24 @@
+<!--
+    Check this link out for loops to display products
+    https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates
+-->
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 style="margin: 5px;">
+        Hello {{username}}, here are products from {{ state }}
+    </h1>
+    <button name="cart" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success">Modify Cart/Checkout</button>
+    <div style="display: flex;">
+    {% for item in products %}
+    <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title">{{item.name}}</h5>
+              <!--<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+              <a href="#" class="btn btn-primary">Add to Cart</a>
+            </div>
+    </div>
+    {% endfor %}
+    </div>
+{% endblock %}
