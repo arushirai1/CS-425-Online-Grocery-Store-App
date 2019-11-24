@@ -139,22 +139,160 @@ class Product(db.Model):
             'nutritional_value': self.nutritional_value
         }
 
+class Warehouse(db.Model):
+    __tablename__ = 'warehouse'
+
+    warehouse_ID = db.Column(db.Integer, primary_key=True)
+    capacity = db.Column(db.Numeric)
+    street_address = db.Column(db.String())
+    city = db.Column(db.String())
+    state = db.Column(db.String())
+    zip_code = db.Column(db.Integer)
+
+    def __init__(self, warehouse_ID, capacity, street_address, city, state, zip_code):
+        self.warehouse_ID = warehouse_ID
+        self.capacity = capacity
+        self.street_address = street_address
+        self.city = city
+        self.state = state
+        self.zip_code = zip_code
+
+    def __repr__(self):
+        return '<Product id {}>'.format(self.warehouse_ID)
+    
+    #used for JSON formatting    
+    def serialize(self):
+        return {
+            'warehouse_ID': self.warehouse_ID, 
+            'capacity': self.capacity,
+            'street_address': self.street_address,
+            'state': self.state,
+            'zip_code': self.zip_code,
+            
+        }
+
+class Order(db.Model):
+    __tablename__ = 'order'
+
+    order_ID = db.Column(db.Integer, primary_key=True)
+    customer_ID = db.Column(db.Integer,db.ForeignKey(Customer.customer_ID))
+    card_number = db.Column(db.Integer)
+    
+
+    def __init__(self, order_ID, customer_ID, card_number):
+        self.order_ID= order_ID
+        self.customer_ID = customer_ID
+        self.card_number = card_number
+        
+
+    def __repr__(self):
+        return '<Product id {}>'.format(self.product_ID)
+    
+    #used for JSON formatting    
+    def serialize(self):
+        return {
+            'order_ID': self.order_ID, 
+            'customer_ID': self.customer_ID,
+            'card_number': self.card_number,
+            
+        }
+
+class Stock(db.Model):
+    __tablename__ = 'stock'
+
+    warehouse_ID = db.Column(db.Integer, primary_key=True)
+    product_ID= db.Column(db.String())
+    quantity = db.Column(db.String())
+    
+
+    def __init__(self, warehouse_ID,product_ID,quantity):
+        self.warehouse_ID = warehouse_ID
+        self.product_ID = product_ID
+        self.quantity = quantity
+       
+
+    def __repr__(self):
+        return '<Product id {}>'.format(self.warehouse_ID)
+    
+    #used for JSON formatting    
+    def serialize(self):
+        return {
+            'warehouse_ID': self.warehouse_ID, 
+            'product_ID': self.product_ID,
+            'quantity': self.quantity,
+            
+        }
 
 
+class Shipping_to(db.Model):
 
+    __tablename__='shipping_to'
 
-class customer_address(db.Model):
-
-    __tablename__='customer_address'
-
-    customer_ID =db.Column(db.Integer, db.ForeignKey(Customer.customer_ID), primary_key=True)
-    street_address=db.Column(db.String())
+    order_ID =db.Column(db.Integer, db.ForeignKey(Order.order_ID), primary_key=True)
+    street_address=db.Column(db.Integer, db.ForeignKey(Product.product_ID), primary_key=True)
     city=db.Column(db.String())
     state=db.Column(db.String())
     zip_code=db.Column(db.Integer)
+    
+    
+    def __init__ (self,order_ID,street_address,city,state,zip_code):
+        self.order_ID=order_ID
+        self.street_address=street_address
+        self.city=city
+        self.state=state
 
-    def __init__ (self,customer_ID, street_address,city,zip_code):
+    def __repr__(self):
+        return '<id {}>'.format(self.order_ID)
+
+    def serialize(self):
+        return{
+            'order_ID': self.order_ID,
+            'street_address': self.street_address,
+            'city': self.city,
+            'state': self.state,
+            
+        }
+
+
+
+class order_items(db.Model):
+
+    __tablename__='order_items'
+
+    order_ID =db.Column(db.Integer, db.ForeignKey(Order.order_ID), primary_key=True)
+    product_ID=db.Column(db.Integer, db.ForeignKey(Product.product_ID), primary_key=True)
+    quantity=db.Column(db.Integer)
+    
+    
+    def __init__ (self,order_ID,product_ID,quantity):
+        self.order_ID=order_ID
+        self.product_ID=product_ID
+        self.quantity=quantity
+
+    def __repr__(self):
+        return '<id {}>'.format(self.order_ID)
+
+    def serialize(self):
+        return{
+            'order_ID': self.order_ID,
+            'product_ID': self.product_ID,
+            'quantity': self.quantity,
+            
+        }
+
+
+
+class Pricing(db.Model):
+
+    __tablename__='pricing'
+
+    product_ID =db.Column(db.Integer, db.ForeignKey(Customer.customer_ID),primary_key=True)
+    state=db.Column(db.String())
+    price=db.Column(db.Numeric)
+    
+    def __init__ (self,customer_ID,card_number,street_address,city,zip_code):
         self.customer_ID=customer_ID
+        self.card_number=card_number
         self.street_address=street_address
         self.city=city
         self.zip_code=zip_code
@@ -165,6 +303,7 @@ class customer_address(db.Model):
     def serialize(self):
         return{
             'customer_ID': self.customer_ID,
+            'card_number': self.card_number,
             'street_address': self.street_address,
             'city': self.city,
             'zip_code': self.zip_code,
@@ -201,17 +340,18 @@ class credit_card(db.Model):
         }
 
 
-class pricing(db.Model):
+class customer_address(db.Model):
 
-    __tablename__='pricing'
+    __tablename__='customer_address'
 
-    product_ID =db.Column(db.Integer, db.ForeignKey(Customer.customer_ID),primary_key=True)
+    customer_ID =db.Column(db.Integer, db.ForeignKey(Customer.customer_ID), primary_key=True)
+    street_address=db.Column(db.String())
+    city=db.Column(db.String())
     state=db.Column(db.String())
-    price=db.Column(db.Numeric)
-    
-    def __init__ (self,customer_ID,card_number,street_address,city,zip_code):
+    zip_code=db.Column(db.Integer)
+
+    def __init__ (self,customer_ID, street_address,city,zip_code):
         self.customer_ID=customer_ID
-        self.card_number=card_number
         self.street_address=street_address
         self.city=city
         self.zip_code=zip_code
@@ -222,12 +362,10 @@ class pricing(db.Model):
     def serialize(self):
         return{
             'customer_ID': self.customer_ID,
-            'card_number': self.card_number,
             'street_address': self.street_address,
             'city': self.city,
             'zip_code': self.zip_code,
         }
-
 
 
 
