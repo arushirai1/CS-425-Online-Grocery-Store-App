@@ -43,7 +43,7 @@ def view_products():
     username = str(request.args.get("username", "no"))
     password = str(request.args.get("password", "no"))
     print(username, password)
-    user_id = db_methods.validate_login(username, password)
+    user_id = db_methods.validate_login(db, username, password)
     if user_id == 0:
         form = login_form.LoginForm()
         return render_template('index.html', form = form)
