@@ -10,6 +10,11 @@
     </head>
     <body style="margin: 10pt">
         <script>
+        function goBack() {
+            backUrl = getCookie("db-backUrl");
+            console.log(backUrl)
+            window.location.replace(backUrl);
+        }
         //standard getCookie code from online
         function getCookie(cname) {
             var name = cname + "=";

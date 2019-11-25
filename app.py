@@ -108,6 +108,10 @@ def view_cart():
     print("arrived")
     return render_template('view_cart.html', cart = session['cart'])
 
+@app.route('/payment-page', methods=["GET"])
+def get_payment_page():
+    return render_template('payment.html', cart = session['cart'])
+
 @app.route('/init-data')
 def init_d():
     load_data.init_data(db)
