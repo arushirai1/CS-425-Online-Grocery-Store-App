@@ -2,7 +2,7 @@
 {% block content %}
 <script>
     function addAddr() {
-        document.getElementById("addNewAddress").style.visibility = "visible";
+        document.getElementById("addNewAddress").style.display = "block";
     }
 
     function validateData(inputAddress, inputAddress2, inputCity, inputState, inputZip) {
@@ -11,6 +11,7 @@
         }
         return false;
     }
+    
     function saveAddress() {
         inputZip = document.getElementById("inputZip").value;
         inputAddress = document.getElementById("inputAddress").value;
@@ -18,12 +19,35 @@
         inputCity = document.getElementById("inputCity").value;
         inputState = document.getElementById("inputState").value;
         if(validateData(inputAddress, inputAddress2, inputCity, inputState, inputZip)) {
-            document.getElementById("addNewAddress").style.visibility = "hidden";
-            document.getElementById("error").style.visibility = "hidden";
+            document.getElementById("addNewAddress").style.display = "none";
+            document.getElementById("error").style.display = "none";
 
-            //send address
+            //TODO: send address and reload page
         } else {
-            document.getElementById("error").style.visibility = "visible";
+            document.getElementById("error").style.display = "block";
+
+        }
+    }
+    
+    function addNewCreditCard() {
+        document.getElementById("addNewCreditCard").style.display = "block";
+    }
+
+    function saveCreditCardInfo() {
+        inputZip = document.getElementById("inputBillingZip").value;
+        inputAddress = document.getElementById("inputStreetAddress").value;
+        inputCity = document.getElementById("inputBillingCity").value;
+        inputState = document.getElementById("inputBillingState").value;
+        inputCredit = document.getElementById("inputCreditCard").value;
+        inputName = document.getElementById("nameOnCard").value;
+
+        if(validateData(inputAddress, inputCredit, inputCity, inputState, inputName)) {
+            document.getElementById("addNewCreditCard").style.display = "none";
+            document.getElementById("error").style.display = "none";
+
+            //TODO: send credit card and reload page
+        } else {
+            document.getElementById("error2").style.display = "block";
 
         }
     }
@@ -31,11 +55,71 @@
 <h1>Payment Page</h1>
 <div>
     <h3>Select Credit Card</h3>
+    <div style="background-color: black;size: 2pt ; border-top: 2px dashed black;"></div>
+
+    {% for card in credit_cards %}
+    
+    <div style="display: flex;">
+        
+        <p style="padding: 8pt; border-right: 2px solid black">{{card['creditNumber']}}</p>
+        <button name="Select" onclick="select({{card.credit_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
+        <button name="Update" onclick="update({{card.credit_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update</button>
+        <button name="Delete" onclick="deleteItem({{card.credit_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
+    </div>
+    <div style="background-color: black;size: 2pt ; border-top: 1px dashed black;"></div>
+
+    {% endfor %}
+    <button name="addBillingData" onclick="addNewCreditCard()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Add New Credit Card</button>
+    <form id="addNewCreditCard" style="display: none">
+            <div class="form-group">
+                    <label for="inputCreditCard">Credit Card Number</label>
+                    <input type="text" class="form-control" id="inputCreditCard" placeholder="88888888888888">
+                  </div>
+            <div class="form-group">
+              <label for="nameOnCard">Name on Card</label>
+              <input type="text" class="form-control" id="nameOnCard" placeholder="Jane Doe">
+            </div>
+            <h4>Billing Address</h4> </h4>
+            <div class="form-group">
+                    <label for="inputStreetAddress">Street Address</label>
+                    <input type="text" class="form-control" id="inputStreetAddress" placeholder="123 Main Street APT#3">
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="inputBillingCity">City</label>
+                <input type="text" class="form-control" id="inputBillingCity">
+              </div>
+              <div class="form-group col-md-4">
+                <label for="inputBillingState">State</label>
+                <input type="text" class="form-control" id="inputBillingState">
+              </div>
+              <div class="form-group col-md-2">
+                <label for="inputBillingZip">Zip</label>
+                <input type="text" class="form-control" id="inputBillingZip">
+              </div>
+            </div>
+            <p id="error2" style="color:darkred;display: none;">Error, fields in wrong format</p>
+            <button type="button" onclick="saveCreditCardInfo()" class="btn btn-primary">Save Credit Card Info</button>
+          </form>
 </div>
 <div>
     <h3>Select Shipping Address</h3>
-    <button name="addAddress" onclick="addAddr()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Add a Shipping Address</button>
-    <form id="addNewAddress" style="visibility: hidden">
+    <div style="background-color: black;size: 2pt ; border-top: 2px dashed black;"></div>
+
+    {% for addr in shipping_addresses %}
+    
+    <div style="display: flex;">
+        
+        <p style="padding: 8pt; border-right: 2px solid black">{{addr['address']}}</p>
+        <button name="Select" onclick="select({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
+        <button name="Update" onclick="update({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update</button>
+        <button name="Delete" onclick="deleteItem({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
+    </div>
+    <div style="background-color: black;size: 2pt ; border-top: 1px dashed black;"></div>
+
+    {% endfor %}
+    <button name="addAddress" onclick="addAddr()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Add a Shipping Address</button>
+    <form id="addNewAddress" style="display: none">
             <div class="form-group">
               <label for="inputAddress">Address</label>
               <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
@@ -58,9 +142,11 @@
                 <input type="text" class="form-control" id="inputZip">
               </div>
             </div>
-            <p id="error" style="color:darkred;visibility: hidden;">Error, write address in the right format</p>
+            <p id="error" style="color:darkred;display: none;">Error, write address in the right format</p>
             <button type="button" onclick="saveAddress()" class="btn btn-primary">Save Address</button>
           </form>
 </div>
+
+<button name="submitOrder" onclick="submitOrder()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Submit Order</button>
 
 {% endblock %}

@@ -110,7 +110,7 @@ def view_cart():
 
 @app.route('/payment-page', methods=["GET"])
 def get_payment_page():
-    return render_template('payment.html', cart = session['cart'])
+    return render_template('payment.html', credit_cards = [{'credit_id': 1999,'creditNumber': '6789768798709854'}], shipping_addresses = [{'address_id': 2000, 'address': "test"}, {'address_id': 20001, 'address': "test2"}])
 
 @app.route('/init-data')
 def init_d():
