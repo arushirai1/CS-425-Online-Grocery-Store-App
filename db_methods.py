@@ -9,8 +9,7 @@ def validate_login(db,username, password):
         #pdb.set_trace()
         if username == row.username and password == row.user_password:
             return user_id
-        else:
-            return 0
+    return 0
 
 
 def get_products(db):
@@ -27,11 +26,9 @@ def get_product_types(db):
 	return a
 
 def get_product_info(db, stateArg):
-	sql_string="select product_id,product_name, price from Product natural join Pricing where postal_state= '"+ stateArg+"';"
-	results = db.engine.execute(sql_string)
 	keys = get_product_types(db)
 	products = []
-#	products = dict.fromkeys(keys)
+	#products = dict.fromkeys(keys)
 
 	#create empty product list
 	for key in keys:
@@ -40,9 +37,10 @@ def get_product_info(db, stateArg):
 
 	#pdb.set_trace()
 	#fill product list
+	count = 0
+
 	for key in keys:
-		count = 0
-		sql_string="select product_id,product_name, price from Product natural join Pricing where product_type = '"+key+"';"
+		sql_string="select product_id,product_name, price from Product natural join Pricing where product_type = '"+key+"' AND postal_state= '"+ stateArg+"';"
 		results = db.engine.execute(sql_string)
 		for row in results:
 			product_id = row.product_id
@@ -53,7 +51,7 @@ def get_product_info(db, stateArg):
 		count=count+1
 
 
-	print (products)
+	return products
 #[{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
 
 def get_payment_details(db, user_id):
