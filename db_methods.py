@@ -55,11 +55,12 @@ def get_product_info(db, stateArg):
 #[{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
 
 def get_payment_details(db, user_id):
-	sql_string="select * from Credit_card where customer_id=" + user_id + ";"
+	sql_string="select * from credit_card where customer_id=" + str(user_id) + ";"
+	print(sql_string)
 	results = db.engine.execute(sql_string)
 	products=[]
 	for row in results:
-		product_data = {'customer_id': row.customer_id, 'card_number': row.card_number, 'street_address': row.street_address, 'city': row.city, 'postal_state': row.postal_state, 'zip': row.zip}
+		product_data = {'customer_id': row.customer_id, 'credit_id': row.credit_id, 'card_number': row.card_number, 'street_address': row.street_address, 'city': row.city, 'postal_state': row.postal_state, 'zip': row.zip}
 		products.append(product_data)
 
 	return products 
@@ -67,10 +68,17 @@ def get_payment_details(db, user_id):
 def add_credit_card(db,user_id,card_number,street_address,city,state,zip_code):
 	sql_max="Select max(credit_id) from Credit_card;"
 	max_id=db.engine.execute(sql_max)
+	print("test")
+	next_primary_key=0
 	for row in max_id:   #loop only runs once
 		next_primary_key=row.max +1  
 	
 	sql_string="insert into Credit_card values( "+ str(next_primary_key)+ "," + str(user_id) + "," + str(card_number) + ",'"  + str(street_address) + "','"  + str(city)+ "','"  + str(state) + "',"  + str(zip_code) + ");"
+
+	db.engine.execute(sql_string)
+
+def delete_card(db, credit_id):
+	sql_string="delete from credit_card where credit_id="+str(credit_id)+";"
 	db.engine.execute(sql_string)
 
 
@@ -86,6 +94,7 @@ def is_available(db,product_id, quantity):
 def create_order(db, customer_id, card_number, cart_content):	
 	sql_max="Select max(order_id) from Orders;"
 	max_id=db.engine.execute(sql_max)
+	next_primary_key=0
 	for row in max_id:   #loop only runs once
 		next_primary_key=row.max +1 
 	

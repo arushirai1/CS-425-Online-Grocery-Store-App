@@ -11,6 +11,15 @@
         }
         return false;
     }
+
+    var paymentDetails = {"credit_id": 0, "addr_id": 0};
+    function selectCard(credit_id) {
+        if(paymentDetails["credit_id"] != 0) {
+            document.getElementById(paymentDetails["credit_id"].toString()).style.backgroundColor="white";
+        }
+        document.getElementById(credit_id.toString()).style.backgroundColor="pink";
+        paymentDetails["credit_id"] = credit_id;
+    }
     
     function saveAddress() {
         inputZip = document.getElementById("inputZip").value;
@@ -33,6 +42,42 @@
         document.getElementById("addNewCreditCard").style.display = "block";
     }
 
+    var editted = 000;
+    var needsUpdateCard = false;
+    function editCard(credit_id, inputAddress, inputCredit, inputCity, inputState) {
+        //shade the card
+        document.getElementById(credit_id.toString()).style.backgroundColor="yellow"
+        //delete card without refresh
+        deleteCardWithoutRefresh(credit_id)
+
+        //populate
+        addNewCreditCard();
+        document.getElementById("inputBillingZip").value = inputZip;
+        document.getElementById("inputStreetAddress").value = inputAddress;
+        document.getElementById("inputBillingCity").value = inputCity;
+        document.getElementById("inputBillingState").value = inputState;
+        document.getElementById("inputCreditCard").value = inputCredit;
+
+    }
+
+    function deleteCardWithoutRefresh(credit_id) {
+        var params = "credit_id=" + credit_id;
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", '/delete-credit-card?'+ params, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+    }
+
+    function deleteCard(credit_id) {
+        var params = "credit_id=" + credit_id;
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", '/delete-credit-card?'+ params, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+        window.location.replace(window.location.origin+"/payment-page");
+    }
     function saveCreditCardInfo() {
         inputZip = document.getElementById("inputBillingZip").value;
         inputAddress = document.getElementById("inputStreetAddress").value;
@@ -45,7 +90,14 @@
             document.getElementById("addNewCreditCard").style.display = "none";
             document.getElementById("error").style.display = "none";
 
-            //TODO: send credit card and reload page
+            var params = "card_number=" + inputCredit + "&street_address=" + inputAddress + "&city=" + inputCity + "&postal_state=" + inputState + "&zip=" + inputZip;
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("GET", '/add-credit-card?'+ params, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send();
+            document.location.reload();
+            //window.location.replace(window.location.origin+"/payment-page");
         } else {
             document.getElementById("error2").style.display = "block";
 
@@ -59,12 +111,15 @@
 
     {% for card in credit_cards %}
     
-    <div style="display: flex;">
+    <div id="{{card['credit_id']}}" style="width: 100%; display: flex;">
+        <div style="width: 30%; border-right: 2px solid black">
+                <p style="padding: 8pt;">{{card['card_number']}}</p>
+                <p style="color:blue; word-wrap: normal;">Billing Address: {{card['street_address']}}</p>        
+        </div>
         
-        <p style="padding: 8pt; border-right: 2px solid black">{{card['creditNumber']}}</p>
-        <button name="Select" onclick="select({{card.credit_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
-        <button name="Update" onclick="update({{card.credit_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update</button>
-        <button name="Delete" onclick="deleteItem({{card.credit_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
+        <button name="Select" onclick="selectCard({{card['credit_id'] | safe}})" type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
+        <button name="Edit" onclick='editCard({{card["credit_id"] | safe}}, {{card["street_address"] | tojson}}, {{card["card_number"] | safe}}, {{card["city"] | tojson}}, {{card["postal_state"] | tojson}}, {{card["zip"] | safe}})' type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Edit</button>
+        <button name="Delete" onclick="deleteCard({{card['credit_id'] | safe}})" type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
     </div>
     <div style="background-color: black;size: 2pt ; border-top: 1px dashed black;"></div>
 
@@ -111,9 +166,9 @@
     <div style="display: flex;">
         
         <p style="padding: 8pt; border-right: 2px solid black">{{addr['address']}}</p>
-        <button name="Select" onclick="select({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
-        <button name="Update" onclick="update({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update</button>
-        <button name="Delete" onclick="deleteItem({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
+        <button name="Select" onclick="selectAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
+        <button name="Edit" onclick="editAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Edit</button>
+        <button name="Delete" onclick="deleteAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
     </div>
     <div style="background-color: black;size: 2pt ; border-top: 1px dashed black;"></div>
 
