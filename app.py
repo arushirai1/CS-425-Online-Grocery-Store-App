@@ -6,6 +6,7 @@ import os
 import db_methods
 import pdb
 import secrets
+import helper_methods
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -38,6 +39,53 @@ def index():
     form = login_form.LoginForm()
     return render_template('index.html', form = form)
 
+@app.route('/update-cart', methods=["GET"])
+def update_cart():
+    product_id = int(request.args.get("product_id", 0))
+    quantity = int(request.args.get("quantity", 0))
+
+    for cart_item in session['cart']:
+        if cart_item['product_id'] == product_id:
+            item = cart_item
+            item['quantity'] = quantity
+            cart_item.update(item)
+    return "success"
+
+@app.route('/add-cart', methods=["GET"])
+def add_to_cart():
+    product_id = int(request.args.get("product_id", 0))
+    product_name = str(request.args.get("product_name", None))
+    quantity = int(request.args.get("quantity", 0))
+    price = float(request.args.get("price", 0))
+
+    if not helper_methods.validate_cart_request(product_id, product_name, quantity, price):
+        print("Invalid Request", product_id, product_name, quantity, price)
+
+    #check if existing
+    item = helper_methods.get_existing_item(session['cart'], product_id)
+    if(item['product_id'] == None):
+        item['product_id'] = product_id
+        item['product_name'] = product_name
+        item['quantity'] = quantity
+        item['price'] = price
+        session['cart'].append(item)
+    else:
+        item['quantity'] += quantity
+        for cart_item in session['cart']:
+            if cart_item['product_id'] == product_id:
+                cart_item.update(item)
+    return "success"
+    
+@app.route('/delete-item-cart', methods=["GET"])
+def delete_item():    
+    product_id = int(request.args.get("product_id", 0))
+    print("test")
+    for cart_item in session['cart']:
+        if cart_item['product_id'] == product_id:
+            item = cart_item
+            session['cart'].remove(item)
+    return "success"
+
 @app.route('/products', methods=["GET"])
 def view_products():
     username = str(request.args.get("username", "no"))
@@ -51,8 +99,9 @@ def view_products():
     add_session_variables(user_id, state)
     print(session['user_id'])
     print(session['state'])
-    products = [{'name': 'Apple'},{'name': 'Ice Cream'}, {'name': 'Banana'} ]
-    return render_template('products.html', state=state, username=username, products=products)
+    categories = db_methods.get_product_info(db, state)
+    #pdb.set_trace()
+    return render_template('products.html', state=state, username=username, rows=categories)
 
 @app.route('/view-cart', methods=["GET"])
 def view_cart():

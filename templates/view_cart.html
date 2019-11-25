@@ -6,9 +6,26 @@ function goBack() {
     console.log(backUrl)
     window.location.replace(backUrl);
 }
-function update(product_id, quantity) {
+function update(product_id) {
     console.log("Product Id: %d", product_id)
-    console.log("Quantity: %d", quantity)
+    quantity = document.getElementById("inputQuantity" + product_id).value
+    var params = "product_id=" + product_id + "&quantity=" + quantity;
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("GET", '/update-cart?'+ params, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send();
+    window.location.replace(window.location.origin+"/view-cart");
+}
+
+function deleteItem(product_id) {
+    var params = "product_id=" + product_id;
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("GET", '/delete-item-cart?'+ params, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send();
+    window.location.replace(window.location.origin+"/view-cart");
 }
 </script>
 
@@ -42,10 +59,10 @@ function getTotal() {
     </div>
     <div class="form-group col-md-2">
             <label for="inputQuantity">Quantity</label>
-            <input type="number" class="form-control" id="inputQuantity" value={{item.quantity}}>
+            <input type="number" class="form-control" id="inputQuantity{{item.product_id}}" value={{item.quantity}}>
     </div>
-    <button name="Update Quantity" onclick="goBack()" type="reset" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update Quantity</button>
-    <button name="Delete" onclick="update({{item.product_id | safe}}, {{item.quantity | safe}})" type="reset" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>
+    <button name="Update Quantity" onclick="update({{item.product_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update Quantity</button>
+    <button name="Delete" onclick="deleteItem({{item.product_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>
     <h2 style="margin: 10pt;">Price: {{item.price}}</h2>
 </div>
 {% endfor %}
