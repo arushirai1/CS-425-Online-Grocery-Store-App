@@ -102,12 +102,41 @@ def create_order(db, customer_id, card_number, cart_content):
 	sql_string="insert into Orders values( "+ str(next_primary_key)+ "," + str(customer_id) + "," + str(card_number)   + ");"
 	db.engine.execute(sql_string)
 
-	#for item in cart_content:
-	#	print (item['product'])
-	#	print (item['quantity'])
 	for item in cart_content:
 		product=item["product"] 
 		quantity=item["quantity"]
 		sql_order_items="insert into Order_items values(" + str(next_primary_key) + "," + str(product) + "," + str(quantity) + ");"
+
+def get_shipping_address(db, user_id):
+	sql_string="select street_address,city,postal_state,zip from Customer_address where customer_id=" + str(user_id) + ";"
+	results = db.engine.execute(sql_string)
+	products=[]
+	for row in results:
+		product_data = {'street_address': row.street_address, 'city': row.city, 'postal_state': row.postal_state, 'zip': row.zip}
+		products.append(product_data)
+
+	return products
+
+def is_staff(db, user_id):
+	sql_string="select staff_id from Staff;"
+	results= db.engine.execute(sql_string)
+	for row in results:
+		if user_id == row.staff_id:
+			return True
+	return 0
+
+def add_balance(db,user_id,order_total):
+	sql_curr_balance="Select balance from Customer where customer_id=" + str(user_id) + ";"
+	curr_balance_results=db.engine.execute(sql_curr_balance)
+	for row in curr_balance_results:
+		curr_balance=row.balance
+		print("before balance " + str(curr_balance))
+	new_balance=curr_balance+order_total
+	#print(new_balance)
+	sql_string="Update Customer set balance ="+str(new_balance)+" where customer_id ="+ str(user_id)+";"
+	results=db.engine.execute(sql_string)
+	#curr_balance_results=db.engine.execute(sql_curr_balance)  #to test new balance
+	#for row in curr_balance_results:
+	#	print("new balance " + str(row.balance))
 
 

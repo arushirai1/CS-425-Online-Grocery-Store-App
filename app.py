@@ -28,12 +28,14 @@ import pdb
 #print(db_methods.get_payment_details(db, '1001'))
 #print(db_methods.add_credit_card(db,"1001",5746384567932345,"123_state_st","Chicago","IL", 60647))
 #print(db_methods.get_payment_details(db, '1001'))
-print(db_methods.is_available(db,1001, 2))
-print(db_methods.is_available(db,1001, 50000))
-print(db_methods.is_available(db,1001, 2372))
-print(db_methods.create_order(db,1001,5746384567932345, [{'product':1000, 'quantity': 5}, {'product':1001, 'quantity': 5},{'product':1002, 'quantity': 5}]))  
-
-
+#print(db_methods.is_available(db,1001, 2))
+#print(db_methods.is_available(db,1001, 50000))
+#print(db_methods.is_available(db,1001, 2372))
+#print(db_methods.create_order(db,1001,5746384567932345, [{'product':1000, 'quantity': 5}, {'product':1001, 'quantity': 5},{'product':1002, 'quantity': 5}]))  
+#print(db_methods.get_shipping_address(db,1001))
+#print(db_methods.is_staff(db, 1001))
+#print(db_methods.is_staff(db, 9003))
+print(db_methods.add_balance(db, 1001, 10))
 
 #cart is a list of product_ids
 session={'user_id': 0, 'state': 'CA', 'cart': [{'product_id': 1001, 'product_name': 'Apple', 'quantity': 3, 'price': 13.48}, {'product_id': 1002, 'product_name': 'Banana', 'quantity': 5, 'price': 2.48}]}
