@@ -21,10 +21,16 @@ import login_form
 
 import pdb
 
-db_methods.get_product_types(db)
-db_methods.get_product_info(db,'IL')
-db_methods.validate_login(db,'tpxyrc','3qkdWRHp')
-
+#db_methods.get_product_types(db)
+#db_methods.get_product_info(db,'IL')
+#db_methods.validate_login(db,'tpxyrc','3qkdWRHp')
+#print(db_methods.get_payment_details(db, '1001'))
+#print(db_methods.add_credit_card(db,"1001",5746384567932345,"123_state_st","Chicago","IL", 60647))
+#print(db_methods.get_payment_details(db, '1001'))
+print(db_methods.is_available(db,1001, 2))
+print(db_methods.is_available(db,1001, 50000))
+print(db_methods.is_available(db,1001, 2372))
+print(db_methods.create_order(db,1001,5746384567932345, [{'product':1000, 'quantity': 5}, {'product':1001, 'quantity': 5},{'product':1002, 'quantity': 5}]))  
 
 
 

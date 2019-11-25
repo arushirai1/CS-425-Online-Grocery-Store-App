@@ -56,3 +56,51 @@ def get_product_info(db, stateArg):
 	print (products)
 #[{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
 
+def get_payment_details(db, user_id):
+	sql_string="select * from Credit_card where customer_id=" + user_id + ";"
+	results = db.engine.execute(sql_string)
+	products=[]
+	for row in results:
+		product_data = {'customer_id': row.customer_id, 'card_number': row.card_number, 'street_address': row.street_address, 'city': row.city, 'postal_state': row.postal_state, 'zip': row.zip}
+		products.append(product_data)
+
+	return products 
+
+def add_credit_card(db,user_id,card_number,street_address,city,state,zip_code):
+	sql_max="Select max(credit_id) from Credit_card;"
+	max_id=db.engine.execute(sql_max)
+	for row in max_id:   #loop only runs once
+		next_primary_key=row.max +1  
+	
+	sql_string="insert into Credit_card values( "+ str(next_primary_key)+ "," + str(user_id) + "," + str(card_number) + ",'"  + str(street_address) + "','"  + str(city)+ "','"  + str(state) + "',"  + str(zip_code) + ");"
+	db.engine.execute(sql_string)
+
+
+
+def is_available(db,product_id, quantity):
+    sql_string="select product_ID,sum(quantity) from Stock group by product_ID having product_ID=" +str(product_id)+ ";"
+    results=db.engine.execute(sql_string)
+    for row in results:
+    	if row.sum>=quantity:
+    		return True
+    return False
+
+def create_order(db, customer_id, card_number, cart_content):	
+	sql_max="Select max(order_id) from Orders;"
+	max_id=db.engine.execute(sql_max)
+	for row in max_id:   #loop only runs once
+		next_primary_key=row.max +1 
+	
+
+	sql_string="insert into Orders values( "+ str(next_primary_key)+ "," + str(customer_id) + "," + str(card_number)   + ");"
+	db.engine.execute(sql_string)
+
+	#for item in cart_content:
+	#	print (item['product'])
+	#	print (item['quantity'])
+	for item in cart_content:
+		product=item["product"] 
+		quantity=item["quantity"]
+		sql_order_items="insert into Order_items values(" + str(next_primary_key) + "," + str(product) + "," + str(quantity) + ");"
+
+
