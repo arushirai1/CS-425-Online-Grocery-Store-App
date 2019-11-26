@@ -160,6 +160,12 @@ def delete_item():
             session['cart'].remove(item)
     return "success"
 
+@app.route('/delete-product', methods=["GET"])
+def delete_products():
+    product_id = int(request.args.get("product_id", ""))
+    db_methods.delete_product_pricing(db, product_id, session['state'])
+    return "success"
+
 @app.route('/add-product', methods=["GET"])
 def add_products():
     productName = str(request.args.get("productName", ""))
@@ -195,7 +201,7 @@ def view_products():
     categories = db_methods.get_product_info(db, state)
     if(db_methods.is_staff(db, user_id)):
         product_types = db_methods.get_product_types(db)
-        return render_template('staff_product.html', username= username, rows = categories, product_types = product_types)
+        return render_template('staff_product.html', username= username, rows = categories, product_types = product_types, state=session['state'])
     
     #pdb.set_trace()
     return render_template('products.html', state=state, username=username, rows=categories)

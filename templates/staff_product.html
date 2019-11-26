@@ -10,6 +10,17 @@
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send();
     }
+
+    function deleteProduct(product_id) {
+        var params = "product_id=" + product_id;
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", '/delete-product?'+ params, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+        window.location.reload(true)
+    }
+
     function addStockToWarehouse() {
 
     }
@@ -48,6 +59,7 @@
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send();
         //refresh page
+        window.location.reload(true)
         window.location.href = getCookie("db-product-page")
 
         document.getElementById("addNewProduct").style.display="none"
@@ -67,7 +79,7 @@
     </script>
 
     <h1 style="margin: 5px;">
-        Hello {{username}}, you are staff so you can add/modify/delete the products:
+        Hello {{username}}, you are staff in {{state}} so you can add/modify/delete the products only in {{state}}:
     </h1>
     <div>
         <button name="stockToWarehouse" onclick="addStockToWarehouse()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success">Add Stock to Warehouse</button>
@@ -129,8 +141,19 @@
             <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
             <div class="card-body">
               <h5 class="card-title">{{item['name'].capitalize()}}</h5>
+              <p class="card-text">Size: {{item['size']}}</p>
+              {% if item['alcohol_content'] is not none %}   
+              {% if item['alcohol_content'] != 0.00 %}   
+
+              <p class="card-text" style="color: red" >Alc. Content: {{item['alcohol_content']}}</p>
+              {% endif %}
+              {% endif %}
+
+              <p class="card-text" >Nutritional Value: {{item['nutritional_value']}}</p>
               <p class="card-text" style="color:darkgreen;">${{item['price']}}</p>
-              <a href="#" onclick="editProduct({{item['product_ID'] | safe}}, &quot;{{item['name'] | safe}}&quot;, {{item['price'] | safe}})" class="btn btn-primary">Edit Product</a>
+
+              <a onclick="editProduct({{item['product_ID'] | safe}}, &quot;{{item['name'] | safe}}&quot;, {{item['price'] | safe}})" class="btn btn-primary">Edit Product</a>
+              <a onclick="deleteProduct({{item['product_ID'] | safe}})" class="btn btn-danger">Delete</a>
             </div>
     </div>
     {% endfor %}

@@ -40,13 +40,13 @@ def get_product_info(db, stateArg):
 	count = 0
 
 	for key in keys:
-		sql_string="select product_id,product_name, price from Product natural join Pricing where product_type = '"+key+"' AND postal_state= '"+ stateArg+"';"
+		sql_string="select product_id, product_type, size, product_name, alcohol_content, nutritional_value, price from Product natural join Pricing where product_type = '"+key+"' AND postal_state= '"+ stateArg+"';"
 		results = db.engine.execute(sql_string)
 		for row in results:
 			product_id = row.product_id
 			product_name = row.product_name
 			price = row.price
-			product_data = {'product_ID': product_id, 'name': product_name, 'price': price}
+			product_data = {'product_ID': product_id, 'name': product_name, 'price': price, 'product_type': row.product_type, 'size': row.size, 'alcohol_content': row.alcohol_content, 'nutritional_value': row.nutritional_value}
 			products[count]['items'].append(product_data)
 		count=count+1
 
@@ -183,6 +183,10 @@ def add_products(db, product_name, product_type, size, alcohol_content, nutritio
 	sql_check ="select * from Product where product_id=" +str(next_primary_key)+";"
 	results=db.engine.execute(sql_check)
 	print(results.fetchone())
+
+def delete_product_pricing(db, product_id, state):
+	sql_string="Delete from pricing where product_id=" + str(product_id) + " and postal_state='" + str(state) + "';"
+	db.engine.execute(sql_string)
 
 def delete_product(db, product_id):
 	sql_a="Select * from product where product_id ="+ str(product_id) + ";"
