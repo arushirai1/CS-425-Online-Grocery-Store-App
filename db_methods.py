@@ -69,9 +69,8 @@ def add_credit_card(db,user_id,card_number,street_address,city,state,zip_code):
 	sql_max="Select max(credit_id) from Credit_card;"
 	max_id=db.engine.execute(sql_max)
 	print("test")
-	next_primary_key=0
-	for row in max_id:   #loop only runs once
-		next_primary_key=row.max +1  
+	row=max_id.fetchone()  #loop only runs once
+	next_primary_key=row.max +1  
 	
 	sql_string="insert into Credit_card values( "+ str(next_primary_key)+ "," + str(user_id) + "," + str(card_number) + ",'"  + str(street_address) + "','"  + str(city)+ "','"  + str(state) + "',"  + str(zip_code) + ");"
 
@@ -94,9 +93,9 @@ def is_available(db,product_id, quantity):
 def create_order(db, customer_id, card_number, cart_content):	
 	sql_max="Select max(order_id) from Orders;"
 	max_id=db.engine.execute(sql_max)
-	next_primary_key=0
-	for row in max_id:   #loop only runs once
-		next_primary_key=row.max +1 
+	#next_primary_key=0
+	row = max_id.fetchone()
+	next_primary_key=row.max +1 
 	
 
 	sql_string="insert into Orders values( "+ str(next_primary_key)+ "," + str(customer_id) + "," + str(card_number)   + ");"
@@ -156,5 +155,43 @@ def remove_stock(db, product_id, order_quantity):
     else:
         return False
 
-def 
+def add_products(db, product_name, product_type, size, alcohol_content, nutritional_value):
+	sql_max="Select max(product_id) from Product;"
+	max_id=db.engine.execute(sql_max)
+	row = max_id.fetchone()
+	next_primary_key=row.max +1 
+	sql_string="insert into Product values( "+ str(next_primary_key)+ ",'" + str(product_name) + "','" + str(product_type) +  "'," + str(size) +  "," + str(alcohol_content) +  "," + str(nutritional_value) + ");"
+	db.engine.execute(sql_string)
+	sql_check ="select * from Product where product_id=" +str(next_primary_key)+";"
+	results=db.engine.execute(sql_check)
+	print(results.fetchone())
+
+def delete_product(db, product_id):
+	sql_a="Select * from product where product_id ="+ str(product_id) + ";"
+	product_info=db.engine.execute(sql_a)
+	row = product_info.fetchone()
+	if row.product_id != None:
+		sql_string="Delete from Product where product_id=" + str(product_id) + ";"
+		db.engine.execute(sql_string)
+
+		sql_check="Select from Product where product_id=" + str(product_id) + ";"
+		results=db.engine.execute(sql_check)
+		print(results.fetchone())
+		return True
+	return False
+def modify_product(db, product_id, new_product_name, new_product_type, new_size, new_alcohol_content, new_nutritional_value):
+	sql_string="update Product set product_name= '" + str(new_product_name) + "', product_type = '" + str(new_product_type) + "' , size =" + str(new_size) + ", alcohol_content=" +str(new_alcohol_content) + ", nutritional_value =" +str(new_nutritional_value) + ";"
+	db.engine.execute(sql_string)
+	sql_check="select * from Product where product_id=" +str(product_id) + ";"
+	results=db.engine.execute(sql_check)
+	print(results.fetchone())
+
+def add_address(db, customer_id, street_address, city, state, zip_code):
+	sql_string="insert into Customer_address values( "+ str(customer_id)+ ",'" + str(street_address) + "','" + str(city) +  "','" + str(state) +  "'," + str(zip_code) + ");"
+	db.engine.execute(sql_string)
+	sql_check="select * from Customer_address where customer_id=" +str(customer_id) + ";"
+	results=db.engine.execute(sql_check)
+	for row in results:
+		print(row)
+	#print(results.fetchone())
 

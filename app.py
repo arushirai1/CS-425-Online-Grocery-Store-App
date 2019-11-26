@@ -36,7 +36,12 @@ import pdb
 #print(db_methods.is_staff(db, 1001))
 #print(db_methods.is_staff(db, 9003))
 #print(db_methods.add_balance(db, 1001, 10))
-print(db_methods.remove_stock(db, 1001, 10))
+#print(db_methods.remove_stock(db, 1001, 10))
+#print(db_methods.add_products(db, "apple pie" , "food", 2.1, "null" , 800))
+#print(db_methods.delete_product(db, 1086))
+print(db_methods.modify_product(db, 1000, 'banana', 'fruit', 2.1, 'null', 200))
+print(db_methods.add_address(db, 1001, "111 state ", "Chicago", "IL", 60647))
+
 #cart is a list of product_ids
 session={'user_id': 0, 'state': 'CA', 'cart': [{'product_id': 1001, 'product_name': 'Apple', 'quantity': 3, 'price': 13.48}, {'product_id': 1002, 'product_name': 'Banana', 'quantity': 5, 'price': 2.48}]}
 #pdb.set_trace()
