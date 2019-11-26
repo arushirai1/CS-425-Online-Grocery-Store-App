@@ -2,13 +2,20 @@
 
 {% block content %}
     <script>
-    function editProduct(product_id, name, price) {
-        var params = "product_id=" + product_id + "&product_name=" + name + "&quantity=" + 1 + "&price=" + price;
-        var xhr = new XMLHttpRequest();
+    
+    var existingProduct = false;
 
-        xhr.open("GET", '/add-cart?'+ params, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send();
+    function editProduct(product_id, product_name, product_type, size, alcohol_content, nutritional_value, price) {
+        document.getElementById("product_id_of_edit").value = product_id
+        document.getElementById("product_name").value = product_name
+        document.getElementById("product_type").value = product_type
+        document.getElementById("product_size").value = size
+        document.getElementById("alcohol_content").value = alcohol_content
+        document.getElementById("nutritional_value").value = nutritional_value
+        document.getElementById("productPrice").value = price
+        existingProduct = true;
+        document.getElementById("addNewProduct").style.display="block"
+
     }
 
     function deleteProduct(product_id) {
@@ -41,6 +48,7 @@
         alcoholContent = document.getElementById("alcohol_content").value
         nutritionalValue = document.getElementById("nutritional_value").value
         productPrice = document.getElementById("productPrice").value
+        productState = document.getElementById("select_state").value
         if(alcoholContent < 0) {
             alcoholContent = 0;
         }
@@ -54,8 +62,20 @@
         //send data
         var params = "productName=" + productName + "&productType=" + productType + "&productSize=" + productSize + "&alcoholContent=" + alcoholContent+"&nutritionalValue=" +nutritionalValue+"&productPrice="+productPrice;
         var xhr = new XMLHttpRequest();
+        params += "&product_state=";
+        params += productState;
 
-        xhr.open("GET", '/add-product?'+ params, true);
+        if(existingProduct) {
+            params += "&product_id="
+            params += document.getElementById("product_id_of_edit").value;
+            document.getElementById("product_id_of_edit").value = "";
+            existingProduct= false;
+
+            xhr.open("GET", '/update-product?'+ params, true);       
+
+        } else {
+            xhr.open("GET", '/add-product?'+ params, true);
+        }
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send();
         //refresh page
@@ -63,6 +83,10 @@
         window.location.href = getCookie("db-product-page")
 
         document.getElementById("addNewProduct").style.display="none"
+    }
+    function refreshForState(username, password) {
+        params = "username="+username+"&password="+password+"&state_select="+document.getElementById("select_state_products").value;
+        window.location.href = window.location.origin+"/products?"+params;
     }
 
     function addProduct() {
@@ -76,6 +100,7 @@
 
     <script>
         document.cookie = "db-product-page=" + window.location.href+";";
+
     </script>
 
     <h1 style="margin: 5px;">
@@ -86,8 +111,25 @@
         <button name="product" onclick="addProduct()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary">Add Product</button>
 
         <button name="logout" onclick="logout()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-secondary">Logout</button>
+        <div class="input-group mb-3" style="width: 20%;">
+                <div class="input-group-prepend">
+                        <label class="input-group-text" for="select_state_products">State</label>
+                </div>
+                <select class="custom-select" id="select_state_products">
+
+                    <option selected>{{state}}</option>
+
+                    {% for st in temp %}
+                        <option value={{st | tojson}}>{{st}}</option>
+                    {% endfor%}
+
+                </select>
+        <button name="stateDropDown" onclick='refreshForState({{username | tojson}}, {{password | tojson}})' type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary">Refresh State</button>
+
+        </div>
     </div>
 
+    <h1 id="product_id_of_edit" style="display: none"></h1>
     <form id="addNewProduct" style="display: none; border: 2px black dotted; padding: 10px">
         <h4>Product Name</h4> </h4>
 
@@ -106,6 +148,20 @@
                     {% for type in product_types%}
                         <option value={{type | tojson}}>{{type}}</option>
                     {% endfor%}
+                </select>
+        </div>
+        <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                        <label class="input-group-text" for="select_state">State</label>
+                      </div>
+                <select class="custom-select" id="select_state">
+
+                    <option selected>{{state}}</option>
+
+                    {% for st in temp %}
+                        <option value={{st | tojson}}>{{st}}</option>
+                    {% endfor%}
+
                 </select>
         </div>
         <div class="form-row">
@@ -134,7 +190,7 @@
     </form>
 
     {% for item in rows %}
-    <h2 style="color:fuchsia; margin: 20pt">{{item.category}} </h2>
+    <h2 style="color:seagreen; margin: 20pt">{{item.category}} </h2>
     <div style="display: flex; flex-flow: row wrap;">
     {% for item in item['items'] %}
     <div class="card" style="width: 18rem;">
@@ -152,7 +208,7 @@
               <p class="card-text" >Nutritional Value: {{item['nutritional_value']}}</p>
               <p class="card-text" style="color:darkgreen;">${{item['price']}}</p>
 
-              <a onclick="editProduct({{item['product_ID'] | safe}}, &quot;{{item['name'] | safe}}&quot;, {{item['price'] | safe}})" class="btn btn-primary">Edit Product</a>
+              <a onclick='editProduct({{item["product_ID"] | safe}}, {{item["name"] | tojson}}, {{item["product_type"] | tojson}}, {{item["size"] | safe}}, {{item["alcohol_content"] | safe}}, {{item["nutritional_value"] | safe}}, {{item["price"] | safe}})' class="btn btn-primary">Edit Product</a>
               <a onclick="deleteProduct({{item['product_ID'] | safe}})" class="btn btn-danger">Delete</a>
             </div>
     </div>

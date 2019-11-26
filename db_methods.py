@@ -46,7 +46,10 @@ def get_product_info(db, stateArg):
 			product_id = row.product_id
 			product_name = row.product_name
 			price = row.price
+
 			product_data = {'product_ID': product_id, 'name': product_name, 'price': price, 'product_type': row.product_type, 'size': row.size, 'alcohol_content': row.alcohol_content, 'nutritional_value': row.nutritional_value}
+			if(product_data['alcohol_content'] == None):
+				product_data['alcohol_content'] = 0.0
 			products[count]['items'].append(product_data)
 		count=count+1
 
@@ -169,6 +172,22 @@ def remove_stock(db, product_id, order_quantity):
         return True
     else:
         return False
+
+def update_products(db, product_id, product_name, product_type, size, alcohol_content, nutritional_value, price, state):
+	sql_string = "UPDATE product SET product_name='"+str(product_name) + "', product_type='" + str(product_type) +  "', size=" + str(size) +  ", alcohol_content=" + str(alcohol_content) +  ", nutritional_value=" + str(nutritional_value) +"where product_id=" + str(product_id)+";"
+	db.engine.execute(sql_string)
+
+	sql_string = "UPDATE pricing SET price="+str(price)+" where product_id="+str(product_id)+" and postal_state='"+str(state)+"';"
+	db.engine.execute(sql_string)
+
+def get_states(db):
+	sql_string = "SELECT distinct postal_state FROM pricing;"
+	a=[]
+	results = db.engine.execute(sql_string)
+	for row in results:
+		a.append(row.postal_state)
+	return a
+
 
 def add_products(db, product_name, product_type, size, alcohol_content, nutritional_value, price, state):
 	sql_max="Select max(product_id) from Product;"

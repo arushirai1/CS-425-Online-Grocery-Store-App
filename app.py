@@ -7,6 +7,7 @@ import db_methods
 import pdb
 import secrets
 import helper_methods
+import json
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -166,20 +167,39 @@ def delete_products():
     db_methods.delete_product_pricing(db, product_id, session['state'])
     return "success"
 
-@app.route('/add-product', methods=["GET"])
-def add_products():
+@app.route('/update-product', methods=["GET"])
+def update_products():
+    productId = int(request.args.get("product_id", "0"))
     productName = str(request.args.get("productName", ""))
     productType = str(request.args.get("productType", 0))
     productSize = float(request.args.get("productSize", 0))
     alcoholContent = str(request.args.get("alcoholContent", 0))
-    print("alcohol: ", alcoholContent)
+    productState = str(request.args.get("product_state", "CA"))
     if(alcoholContent != ""):
         alcoholContent = float(alcoholContent)
     else:
         alcoholContent=0.0
     nutritionalValue = int(request.args.get("nutritionalValue", 0))
     productPrice = float(request.args.get("productPrice", 0.0))
-    db_methods.add_products(db, productName, productType, productSize, alcoholContent, nutritionalValue, productPrice, session['state'])
+    db_methods.update_products(db, productId, productName, productType, productSize, alcoholContent, nutritionalValue, productPrice, productState)
+
+    return "success"
+
+@app.route('/add-product', methods=["GET"])
+def add_products():
+    productName = str(request.args.get("productName", ""))
+    productType = str(request.args.get("productType", 0))
+    productSize = float(request.args.get("productSize", 0))
+    alcoholContent = str(request.args.get("alcoholContent", 0))
+    productState = str(request.args.get("product_state", "CA"))
+
+    if(alcoholContent != ""):
+        alcoholContent = float(alcoholContent)
+    else:
+        alcoholContent=0.0
+    nutritionalValue = int(request.args.get("nutritionalValue", 0))
+    productPrice = float(request.args.get("productPrice", 0.0))
+    db_methods.add_products(db, productName, productType, productSize, alcoholContent, nutritionalValue, productPrice, productState)
 
     return "success"
 
@@ -195,13 +215,21 @@ def view_products():
         return render_template('index.html', form = form)
 
     state = request.args.get("state_select", "CA")
+    states_raw = db_methods.get_states(db)
+    print(states_raw)
+    states_str = json.dumps(states_raw)
+    print(states_str)
+    _states = json.loads(states_str)
+    print(_states)
     add_session_variables(user_id, state)
-    print(session['user_id'])
-    print(session['state'])
+
+    #pdb.set_trace()
     categories = db_methods.get_product_info(db, state)
     if(db_methods.is_staff(db, user_id)):
+
         product_types = db_methods.get_product_types(db)
-        return render_template('staff_product.html', username= username, rows = categories, product_types = product_types, state=session['state'])
+        print(product_types)
+        return render_template('staff_product.html', username= username, rows = categories, product_types=product_types, state=session['state'], temp=_states, password=password)
     
     #pdb.set_trace()
     return render_template('products.html', state=state, username=username, rows=categories)
