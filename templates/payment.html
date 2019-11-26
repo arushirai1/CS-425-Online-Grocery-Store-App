@@ -5,14 +5,14 @@
         document.getElementById("addNewAddress").style.display = "block";
     }
 
-    function validateData(inputAddress, inputAddress2, inputCity, inputState, inputZip) {
-        if(inputAddress != "" && inputAddress2 != "" && inputCity !="" && inputCity !="" && inputZip != "") {
+    function validateData(inputAddress, inputCity, inputState, inputZip) {
+        if(inputAddress != "" && inputCity !="" && inputCity !="" && inputZip != "") {
             return true;
         }
         return false;
     }
 
-    var paymentDetails = {"credit_id": 0, "addr_id": 0};
+    var paymentDetails = {"credit_id": 0, "addr_id": -1};
     function selectCard(credit_id) {
         if(paymentDetails["credit_id"] != 0) {
             document.getElementById(paymentDetails["credit_id"].toString()).style.backgroundColor="white";
@@ -20,22 +20,63 @@
         document.getElementById(credit_id.toString()).style.backgroundColor="pink";
         paymentDetails["credit_id"] = credit_id;
     }
+
+    function selectAddr(addr_id) {
+        if(paymentDetails["addr_id"] != -1) {
+            document.getElementById(paymentDetails["addr_id"].toString()).style.backgroundColor="white";
+        }
+        document.getElementById(addr_id.toString()).style.backgroundColor="pink";
+        paymentDetails["addr_id"] = addr_id;
+    }
     
     function saveAddress() {
         inputZip = document.getElementById("inputZip").value;
         inputAddress = document.getElementById("inputAddress").value;
-        inputAddress2 = document.getElementById("inputAddress2").value;
         inputCity = document.getElementById("inputCity").value;
         inputState = document.getElementById("inputState").value;
-        if(validateData(inputAddress, inputAddress2, inputCity, inputState, inputZip)) {
+        if(validateData(inputAddress, inputCity, inputState, inputZip)) {
             document.getElementById("addNewAddress").style.display = "none";
             document.getElementById("error").style.display = "none";
 
             //TODO: send address and reload page
+            var params = "inputZip=" + inputZip + "&inputAddress=" + inputAddress + "&inputCity=" + inputCity + "&inputState=" + inputState;
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("GET", '/add-address?'+ params, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send();
+            document.location.reload();
+            document.location.reload();
+
         } else {
             document.getElementById("error").style.display = "block";
 
         }
+    }
+
+    function editAddr(addr_id, inputAddress, inputCity, inputState, inputZip) {
+        //shade the card
+        document.getElementById(addr_id.toString()).style.backgroundColor="yellow"
+        //delete addr without refresh
+        //deleteCardWithoutRefresh(addr_id)
+
+        //populate
+        addAddr();
+        document.getElementById("inputZip").value = inputZip.toString();
+        document.getElementById("inputAddress").value = inputAddress;
+        document.getElementById("inputCity").value = inputCity;
+        document.getElementById("inputState").value = inputState;
+
+    }
+
+    function deleteAddr(address_id) {
+        var params = "address_id=" + address_id;
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", '/delete-address?'+ params, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+        window.location.replace(window.location.origin+"/payment-page");
     }
     
     function addNewCreditCard() {
@@ -95,8 +136,8 @@
             xhr.open("GET", '/add-credit-card?'+ params, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send();
+            window.location.replace(window.location.origin+"/payment-page");
             document.location.reload();
-            //window.location.replace(window.location.origin+"/payment-page");
         } else {
             document.getElementById("error2").style.display = "block";
 
@@ -158,15 +199,15 @@
 
     {% for addr in shipping_addresses %}
     
-    <div style="display: flex;">
+    <div id="{{addr['address_id']}}" style="display: flex;">
         
         <div style="width: 30%; border-right: 2px solid black">
                 <p style="padding-top: 8pt;">{{addr['street_address']}}</p>
                 <p>{{addr['city']}} {{addr['postal_state']}} {{addr['zip']}} </p>        
         </div>        
-        <button name="Select" onclick="selectAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
-        <button name="Edit" onclick="editAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Edit</button>
-        <button name="Delete" onclick="deleteAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
+        <button name="Select" onclick="selectAddr({{addr['address_id'] | safe}})" type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
+        <button name="Edit" onclick='editAddr({{addr["address_id"] | safe}}, {{addr["street_address"] | tojson}}, {{addr["city"] | tojson}}, {{addr["postal_state"] | tojson}}, {{addr["zip"] | tojson}})' type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Edit</button>
+        <button name="Delete" onclick="deleteAddr({{addr['address_id'] | safe}})" type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
     </div>
     <div style="background-color: black;size: 2pt ; border-top: 1px dashed black;"></div>
 
@@ -176,10 +217,6 @@
             <div class="form-group">
               <label for="inputAddress">Address</label>
               <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
-            </div>
-            <div class="form-group">
-              <label for="inputAddress2">Address 2</label>
-              <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
             </div>
             <div class="form-row">
               <div class="form-group col-md-6">
@@ -200,6 +237,6 @@
           </form>
 </div>
 
-<button name="submitOrder" onclick="submitOrder()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Submit Order</button>
+<button name="submitOrder" onclick="submitOrder()" type="button" style="width:100%; margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Submit Order</button>
 
 {% endblock %}

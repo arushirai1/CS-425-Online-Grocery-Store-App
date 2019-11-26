@@ -37,8 +37,8 @@ import pdb
 #print(db_methods.is_staff(db, 9003))
 print(db_methods.add_balance(db, 1001, 10))
 
-#cart is a list of product_ids
-session={'user_id': 0, 'state': 'CA', 'cart': [{'product_id': 1001, 'product_name': 'Apple', 'quantity': 3, 'price': 13.48}, {'product_id': 1002, 'product_name': 'Banana', 'quantity': 5, 'price': 2.48}]}
+#session defaults
+session={'user_id': 0, 'state': 'CA', 'cart': [{}]}
 #pdb.set_trace()
 
 
@@ -52,6 +52,28 @@ def delete_credit_card():
     credit_id = int(request.args.get("credit_id", 0))
     print("delete card")
     db_methods.delete_card(db, credit_id)
+
+    return "success"
+
+@app.route('/add-address', methods=["GET"])
+def add_address():
+
+    zip_code = int(request.args.get("inputZip", 0))
+    street_address = str(request.args.get("inputAddress", 0))
+    city = str(request.args.get("inputCity", 0))
+    postal_state = str(request.args.get("inputState", 0))
+    #insert method to add address
+    print("Add Address")
+    #db_methods.add_credit_card(db,session['user_id'],card_number,street_address,city,postal_state,zip_code)
+
+    return "success"
+
+@app.route('/delete-address', methods=["GET"])
+def delete_address():
+    addr_id = int(request.args.get("address_id", 0))
+    tmp = session['addresses'][addr_id]
+    #insert method to delete address
+    print("Delete Address: ", tmp['street_address'])
 
     return "success"
 
@@ -145,9 +167,9 @@ def view_cart():
 @app.route('/payment-page', methods=["GET"])
 def get_payment_page():
     cards = db_methods.get_payment_details(db, session['user_id'])
-    addresses = db_methods.get_shipping_address(db, session['user_id'])
+    session['addresses'] = db_methods.get_shipping_address(db, session['user_id'])
     #pdb.set_trace()
-    return render_template('payment.html', credit_cards = cards, shipping_addresses = addresses)
+    return render_template('payment.html', credit_cards = cards, shipping_addresses = session['addresses'])
 
 @app.route('/init-data')
 def init_d():

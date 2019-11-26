@@ -111,9 +111,11 @@ def get_shipping_address(db, user_id):
 	sql_string="select street_address,city,postal_state,zip from Customer_address where customer_id=" + str(user_id) + ";"
 	results = db.engine.execute(sql_string)
 	products=[]
+	count=0
 	for row in results:
-		product_data = {'street_address': row.street_address, 'city': row.city, 'postal_state': row.postal_state, 'zip': row.zip}
+		product_data = {'address_id': count, 'street_address': row.street_address, 'city': row.city, 'postal_state': row.postal_state, 'zip': row.zip}
 		products.append(product_data)
+		count+=1
 
 	return products
 
