@@ -80,7 +80,9 @@ def delete_card(db, credit_id):
 	sql_string="delete from credit_card where credit_id="+str(credit_id)+";"
 	db.engine.execute(sql_string)
 
-
+def delete_address(db, customer_id, street_address, zip_code):
+	sql_string="delete from customer_address where customer_id="+str(customer_id)+" and street_address='" + str(street_address)+"' and zip="+str(zip_code)+";"
+	db.engine.execute(sql_string)
 
 def is_available(db,product_id, quantity):
     sql_string="select product_ID,sum(quantity) from Stock group by product_ID having product_ID=" +str(product_id)+ ";"
@@ -90,21 +92,32 @@ def is_available(db,product_id, quantity):
     		return True
     return False
 
-def create_order(db, customer_id, card_number, cart_content):	
+def get_card_number(db, card_id):
+	sql_string="select card_number from credit_card where credit_id=" + str(card_id) + ";"
+	result=db.engine.execute(sql_string)
+	row = result.fetchone()
+	print(row.card_number)
+	return row.card_number
+
+def create_order(db, customer_id, card_id, cart_content):	
+	print(customer_id, card_id, cart_content)
 	sql_max="Select max(order_id) from Orders;"
 	max_id=db.engine.execute(sql_max)
 	#next_primary_key=0
 	row = max_id.fetchone()
 	next_primary_key=row.max +1 
 	
+	card_number = get_card_number(db, card_id)
 
 	sql_string="insert into Orders values( "+ str(next_primary_key)+ "," + str(customer_id) + "," + str(card_number)   + ");"
 	db.engine.execute(sql_string)
 
 	for item in cart_content:
-		product=item["product"] 
+		product=item["product_id"] 
 		quantity=item["quantity"]
+		print(product,quantity)
 		sql_order_items="insert into Order_items values(" + str(next_primary_key) + "," + str(product) + "," + str(quantity) + ");"
+		db.engine.execute(sql_order_items)
 
 def get_shipping_address(db, user_id):
 	sql_string="select street_address,city,postal_state,zip from Customer_address where customer_id=" + str(user_id) + ";"

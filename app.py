@@ -43,13 +43,15 @@ import pdb
 #print(db_methods.add_address(db, 1001, "111 state ", "Chicago", "IL", 60647))
 
 #session defaults
-session={'user_id': 0, 'state': 'CA', 'cart': [{}]}
+session={'user_id': 0, 'state': 'CA', 'cart': []}
 #pdb.set_trace()
 
 
 @app.route('/')
 def index():
     form = login_form.LoginForm()
+    session['cart'] = []
+
     return render_template('index.html', form = form)
 
 @app.route('/delete-credit-card', methods=["GET"])
@@ -80,7 +82,17 @@ def delete_address():
     tmp = session['addresses'][addr_id]
     #insert method to delete address
     print("Delete Address: ", tmp['street_address'])
+    db_methods.delete_address(db, session['user_id'], tmp['street_address'], tmp['zip'])
+    return "success"
 
+@app.route('/submit-order', methods=["GET"])
+def submit_order():
+    addr_id = int(request.args.get("addr_id", 0))
+    credit_id = int(request.args.get("credit_id", 0))
+    tmp = session['addresses'][addr_id]
+    #insert method to delete address
+    print("submit_order")
+    db_methods.create_order(db, session['user_id'], credit_id, session['cart'])
     return "success"
 
 '''
@@ -214,7 +226,6 @@ def logout():
 def add_session_variables(user_id, state):
     session['user_id'] = user_id
     session['state'] = state
-    session['cart'] = []
 
 if __name__ == '__main__':
     app.run()

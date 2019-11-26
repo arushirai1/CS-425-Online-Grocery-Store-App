@@ -8,6 +8,8 @@
     <script>
     function viewCart() {
         document.cookie = "db-backUrl=" + window.location.href+";";
+        document.cookie = "db-product-page=" + window.location.href+";";
+
         console.log("hello")
         var xhr = new XMLHttpRequest();
         console.log("1")

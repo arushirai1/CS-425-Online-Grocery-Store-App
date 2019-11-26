@@ -12,9 +12,9 @@
         return false;
     }
 
-    var paymentDetails = {"credit_id": 0, "addr_id": -1};
+    var paymentDetails = {"credit_id": -1, "addr_id": -1};
     function selectCard(credit_id) {
-        if(paymentDetails["credit_id"] != 0) {
+        if(paymentDetails["credit_id"] != -1) {
             document.getElementById(paymentDetails["credit_id"].toString()).style.backgroundColor="white";
         }
         document.getElementById(credit_id.toString()).style.backgroundColor="pink";
@@ -55,9 +55,10 @@
 
     function editAddr(addr_id, inputAddress, inputCity, inputState, inputZip) {
         //shade the card
-        document.getElementById(addr_id.toString()).style.backgroundColor="yellow"
+        document.getElementById(addr_id.toString()).style.backgroundColor="yellow";
+
         //delete addr without refresh
-        //deleteCardWithoutRefresh(addr_id)
+        deleteAddrWithoutReload(addr_id);
 
         //populate
         addAddr();
@@ -66,6 +67,15 @@
         document.getElementById("inputCity").value = inputCity;
         document.getElementById("inputState").value = inputState;
 
+    }
+
+    function deleteAddrWithoutReload(address_id) {
+        var params = "address_id=" + address_id;
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", '/delete-address?'+ params, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
     }
 
     function deleteAddr(address_id) {
@@ -142,8 +152,28 @@
 
         }
     }
+
+        function submitOrder() {
+            // paymentDetails = {"credit_id": -1, "addr_id": -1};
+
+            if(paymentDetails["credit_id"] == -1 || paymentDetails["addr_id"] == -1){
+                document.getElementById("error3").style.display = "block";
+            } else {
+                var params = "credit_id=" + paymentDetails["credit_id"] + "&addr_id=" + paymentDetails["addr_id"];
+                var xhr = new XMLHttpRequest();
+
+                xhr.open("GET", '/submit-order?'+ params, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send();
+                //go back to product page after success
+                window.location.replace(getCookie("db-product-page"))
+            }
+        }
+    
 </script>
 <h1>Payment Page</h1>
+<p id="error3" style="color:darkred;display: none;">Error, please select an address and credit card</p>
+
 <div>
     <h3>Select Credit Card</h3>
     <div style="background-color: black;size: 2pt ; border-top: 2px dashed black;"></div>
