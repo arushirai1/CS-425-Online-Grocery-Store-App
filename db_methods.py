@@ -137,7 +137,7 @@ def is_staff(db, user_id):
 	for row in results:
 		if user_id == row.staff_id:
 			return True
-	return 0
+	return False
 
 def add_balance(db,user_id,order_total):
 	sql_curr_balance="Select balance from Customer where customer_id=" + str(user_id) + ";"
@@ -170,13 +170,16 @@ def remove_stock(db, product_id, order_quantity):
     else:
         return False
 
-def add_products(db, product_name, product_type, size, alcohol_content, nutritional_value):
+def add_products(db, product_name, product_type, size, alcohol_content, nutritional_value, price, state):
 	sql_max="Select max(product_id) from Product;"
 	max_id=db.engine.execute(sql_max)
 	row = max_id.fetchone()
 	next_primary_key=row.max +1 
 	sql_string="insert into Product values( "+ str(next_primary_key)+ ",'" + str(product_name) + "','" + str(product_type) +  "'," + str(size) +  "," + str(alcohol_content) +  "," + str(nutritional_value) + ");"
 	db.engine.execute(sql_string)
+	sql_string="insert into Pricing values( "+ str(next_primary_key)+ ",'" + str(state) + "'," + str(price) +");"
+	db.engine.execute(sql_string)
+
 	sql_check ="select * from Product where product_id=" +str(next_primary_key)+";"
 	results=db.engine.execute(sql_check)
 	print(results.fetchone())

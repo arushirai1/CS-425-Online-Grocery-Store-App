@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <script>
+    function editProduct(product_id, name, price) {
+        var params = "product_id=" + product_id + "&product_name=" + name + "&quantity=" + 1 + "&price=" + price;
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", '/add-cart?'+ params, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+    }
+    function addStockToWarehouse() {
+
+    }
+
+    function validateData( productName , productType , productSize, alcoholContent, nutritionalValue, productPrice) {
+        if(productName != "" && productType != "" && productSize != 0 && nutritionalValue != 0, productPrice != 0) {
+            if(productType != "Select")
+                return true;
+        }
+
+        return false;
+    }
+    
+    function saveNewProduct() {
+        productName = document.getElementById("product_name").value
+        productType = document.getElementById("product_type").value
+        productSize = document.getElementById("product_size").value
+        alcoholContent = document.getElementById("alcohol_content").value
+        nutritionalValue = document.getElementById("nutritional_value").value
+        productPrice = document.getElementById("productPrice").value
+        if(alcoholContent < 0) {
+            alcoholContent = 0;
+        }
+
+        if(!validateData( productName , productType , productSize, alcoholContent, nutritionalValue, productPrice)) {
+            document.getElementById("error2").style.display="block"
+            return;
+        }
+
+
+        //send data
+        var params = "productName=" + productName + "&productType=" + productType + "&productSize=" + productSize + "&alcoholContent=" + alcoholContent+"&nutritionalValue=" +nutritionalValue+"&productPrice="+productPrice;
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", '/add-product?'+ params, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send();
+        //refresh page
+        window.location.href = getCookie("db-product-page")
+
+        document.getElementById("addNewProduct").style.display="none"
+    }
+
+    function addProduct() {
+        document.getElementById("addNewProduct").style.display="block"
+    }
+
+    function logout() {
+        window.location.replace(window.location.origin+"/");
+    }
+    </script>
+
+    <script>
+        document.cookie = "db-product-page=" + window.location.href+";";
+    </script>
+
+    <h1 style="margin: 5px;">
+        Hello {{username}}, you are staff so you can add/modify/delete the products:
+    </h1>
+    <div>
+        <button name="stockToWarehouse" onclick="addStockToWarehouse()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success">Add Stock to Warehouse</button>
+        <button name="product" onclick="addProduct()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary">Add Product</button>
+
+        <button name="logout" onclick="logout()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-secondary">Logout</button>
+    </div>
+
+    <form id="addNewProduct" style="display: none; border: 2px black dotted; padding: 10px">
+        <h4>Product Name</h4> </h4>
+
+        <div class="form-group">
+                <input type="text" class="form-control" id="product_name" placeholder="Apples">
+                </div>
+        <h4>Product Info</h4> </h4>
+        <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                        <label class="input-group-text" for="product_type">Product Type</label>
+                      </div>
+                <select class="custom-select" id="product_type">
+
+                    <option selected>Select</option>
+
+                    {% for type in product_types%}
+                        <option value={{type | tojson}}>{{type}}</option>
+                    {% endfor%}
+                </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+            <label for="product_size">Product Size</label>
+            <input type="number" class="form-control" id="product_size" step=".01" placeholder="1.5">
+            </div>
+            <div class="form-group col-md-4">
+            <label for="alcohol_content">Alcohol Content</label>
+            <input type="number" class="form-control" min ="0.0" id="alcohol_content" step="0.50" placeholder="12.40">
+            <p style="color: chocolate">**Only for Alcohol product types</p>
+        </div>
+            <div class="form-group col-md-2">
+            <label for="nutritional_value">Nutritional Value</label>
+            <input type="number" class="form-control" id="nutritional_value" placeholder="88">
+            </div>
+        </div>
+        <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">$</span>
+                </div>
+                <input type="number" step="0.50" id="productPrice" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
+              </div>
+        <p id="error2" style="color:darkred;display: none;">Error, fields in wrong format</p>
+        <button type="button" onclick="saveNewProduct()" class="btn btn-primary">Save Product</button>
+    </form>
+
+    {% for item in rows %}
+    <h2 style="color:fuchsia; margin: 20pt">{{item.category}} </h2>
+    <div style="display: flex; flex-flow: row wrap;">
+    {% for item in item['items'] %}
+    <div class="card" style="width: 18rem;">
+            <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+            <div class="card-body">
+              <h5 class="card-title">{{item['name'].capitalize()}}</h5>
+              <p class="card-text" style="color:darkgreen;">${{item['price']}}</p>
+              <a href="#" onclick="editProduct({{item['product_ID'] | safe}}, &quot;{{item['name'] | safe}}&quot;, {{item['price'] | safe}})" class="btn btn-primary">Edit Product</a>
+            </div>
+    </div>
+    {% endfor %}
+    </div>
+
+    {% endfor %}
+{% endblock %}

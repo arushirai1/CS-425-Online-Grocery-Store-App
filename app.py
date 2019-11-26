@@ -160,6 +160,24 @@ def delete_item():
             session['cart'].remove(item)
     return "success"
 
+@app.route('/add-product', methods=["GET"])
+def add_products():
+    productName = str(request.args.get("productName", ""))
+    productType = str(request.args.get("productType", 0))
+    productSize = float(request.args.get("productSize", 0))
+    alcoholContent = str(request.args.get("alcoholContent", 0))
+    print("alcohol: ", alcoholContent)
+    if(alcoholContent != ""):
+        alcoholContent = float(alcoholContent)
+    else:
+        alcoholContent=0.0
+    nutritionalValue = int(request.args.get("nutritionalValue", 0))
+    productPrice = float(request.args.get("productPrice", 0.0))
+    db_methods.add_products(db, productName, productType, productSize, alcoholContent, nutritionalValue, productPrice, session['state'])
+
+    return "success"
+
+
 @app.route('/products', methods=["GET"])
 def view_products():
     username = str(request.args.get("username", "no"))
@@ -169,11 +187,16 @@ def view_products():
     if user_id == 0:
         form = login_form.LoginForm()
         return render_template('index.html', form = form)
+
     state = request.args.get("state_select", "CA")
     add_session_variables(user_id, state)
     print(session['user_id'])
     print(session['state'])
     categories = db_methods.get_product_info(db, state)
+    if(db_methods.is_staff(db, user_id)):
+        product_types = db_methods.get_product_types(db)
+        return render_template('staff_product.html', username= username, rows = categories, product_types = product_types)
+    
     #pdb.set_trace()
     return render_template('products.html', state=state, username=username, rows=categories)
 
@@ -194,34 +217,19 @@ def init_d():
     load_data.init_data(db)
     return "Initialized Data!"
 
-@app.route('/add-test')
-def add():
-    try:
-        test=models.Test(
-            name="name",
-            name2="name2",
-        )
-        db.session.add(test)
-        db.session.commit()
-        return "Test added. test id={}".format(test.test_id)
-    except Exception as e:
-	    return(str(e))
-
 @app.route('/heartbeat')
 def test():
     return "Hello World"
 
-@app.route('/test-input')
-def test_input():
-    name = request.args.get("name", "test")
-    return "Hello, " + name
-
 @app.route('/logout')
 def logout():
-   # remove all session variables
-   session['user_id'] = 0
-   session['state'] = 'CA'
-   return redirect(url_for('index'))
+   # remove all session variable
+    session['user_id'] = 0
+    session['state'] = 'CA'
+    form = login_form.LoginForm()
+    session['cart'] = []
+
+    return render_template('index.html', form = form)
 
 def add_session_variables(user_id, state):
     session['user_id'] = user_id
