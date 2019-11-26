@@ -121,7 +121,7 @@ def add_balance(db,user_id,order_total):
 	curr_balance_results=db.engine.execute(sql_curr_balance)
 	for row in curr_balance_results:
 		curr_balance=row.balance
-		print("before balance " + str(curr_balance))
+		#print("before balance " + str(curr_balance))
 	new_balance=curr_balance+order_total
 	#print(new_balance)
 	sql_string="Update Customer set balance ="+str(new_balance)+" where customer_id ="+ str(user_id)+";"
@@ -129,5 +129,23 @@ def add_balance(db,user_id,order_total):
 	#curr_balance_results=db.engine.execute(sql_curr_balance)  #to test new balance
 	#for row in curr_balance_results:
 	#	print("new balance " + str(row.balance))
+def remove_stock(db, product_id, order_quantity):
+    #select warehouse_id with most quantity of product
+    sql_a = "select * from stock where product_id = " + str(product_id) + " order by quantity desc;"
+    warehouses = db.engine.execute(sql_a)
+    warehouse = warehouses.fetchone()
+    print(warehouse)
+    #update quantity in database
+    new_quantity = warehouse.quantity - order_quantity
+    if new_quantity >=0:
+        sql_b = "update stock set quantity = " + str(new_quantity) + " where warehouse_id = " + str(warehouse.warehouse_id) + "and product_id = " + str(product_id) + ";"
+        db.engine.execute(sql_b)
+        sql_check="select * from Stock where warehouse_id = " + str(warehouse.warehouse_id) + "and product_id = " + str(product_id) + ";"
+        results=db.engine.execute(sql_check)
+        print(results.fetchone())
+        return True
+    else:
+        return False
 
+def 
 
