@@ -47,6 +47,32 @@ def index():
     form = login_form.LoginForm()
     return render_template('index.html', form = form)
 
+@app.route('/delete-credit-card', methods=["GET"])
+def delete_credit_card():
+    credit_id = int(request.args.get("credit_id", 0))
+    print("delete card")
+    db_methods.delete_card(db, credit_id)
+
+    return "success"
+
+'''
+Is in the format of:
+[{'customer_id': 1001, 'card_number': 5650504164198020, 'street_address': None, 'city': None, 'postal_state': None, 'zip': None}, {'customer_id': 1001, 'card_number': 2546927393697540, 'street_address': None, 'city': None, 'postal_state': None, 'zip': None}, {'customer_id': 1001, 'card_number': 3936766883568310, 'street_address': None, 'city': None, 'postal_state': None, 'zip': None}]
+'''
+@app.route('/add-credit-card', methods=["GET"])
+def add_credit_card():
+    print(session['user_id'])
+
+    card_number = int(request.args.get("card_number", 0))
+    street_address = str(request.args.get("street_address", 0))
+    city = str(request.args.get("city", 0))
+    postal_state = str(request.args.get("postal_state", 0))
+    zip_code = str(request.args.get("zip", 0))
+
+    db_methods.add_credit_card(db,session['user_id'],card_number,street_address,city,postal_state,zip_code)
+
+    return "success"
+
 @app.route('/update-cart', methods=["GET"])
 def update_cart():
     product_id = int(request.args.get("product_id", 0))
@@ -116,6 +142,13 @@ def view_cart():
     print("arrived")
     return render_template('view_cart.html', cart = session['cart'])
 
+@app.route('/payment-page', methods=["GET"])
+def get_payment_page():
+    cards = db_methods.get_payment_details(db, session['user_id'])
+    addresses = db_methods.get_shipping_address(db, session['user_id'])
+    #pdb.set_trace()
+    return render_template('payment.html', credit_cards = cards, shipping_addresses = addresses)
+
 @app.route('/init-data')
 def init_d():
     load_data.init_data(db)
@@ -153,6 +186,7 @@ def logout():
 def add_session_variables(user_id, state):
     session['user_id'] = user_id
     session['state'] = state
+    session['cart'] = []
 
 if __name__ == '__main__':
     app.run()

@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <script>
-function goBack() {
-    backUrl = getCookie("db-backUrl");
-    console.log(backUrl)
-    window.location.replace(backUrl);
-}
 function update(product_id) {
     console.log("Product Id: %d", product_id)
     quantity = document.getElementById("inputQuantity" + product_id).value
@@ -26,6 +21,11 @@ function deleteItem(product_id) {
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send();
     window.location.replace(window.location.origin+"/view-cart");
+}
+
+function goToPayment() {
+    document.cookie = "db-backUrl=" + window.location.href+";";
+    window.location.replace(window.location.origin+"/payment-page");
 }
 </script>
 
@@ -70,5 +70,6 @@ function getTotal() {
 <h2> Total Price: </h2>
 <h2>$<script>getTotal();</script></h2>
 
+<button name="checkout" onclick="goToPayment()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Checkout</button>
 
 {% endblock %}
