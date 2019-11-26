@@ -45,8 +45,7 @@
             xhr.open("GET", '/add-address?'+ params, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send();
-            document.location.reload();
-            document.location.reload();
+            window.location.replace(window.location.origin+"/payment-page?random="+Math.random());
 
         } else {
             document.getElementById("error").style.display = "block";
@@ -76,7 +75,7 @@
         xhr.open("GET", '/delete-address?'+ params, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send();
-        window.location.replace(window.location.origin+"/payment-page");
+        window.location.replace(window.location.origin+"/payment-page?random="+Math.random());
     }
     
     function addNewCreditCard() {
@@ -117,7 +116,7 @@
         xhr.open("GET", '/delete-credit-card?'+ params, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send();
-        window.location.replace(window.location.origin+"/payment-page");
+        window.location.replace(window.location.origin+"/payment-page?random="+Math.random());
     }
     function saveCreditCardInfo() {
         inputZip = document.getElementById("inputBillingZip").value;
@@ -136,8 +135,8 @@
             xhr.open("GET", '/add-credit-card?'+ params, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send();
-            window.location.replace(window.location.origin+"/payment-page");
-            document.location.reload();
+            window.location.replace(window.location.origin+"/payment-page?random="+Math.random());
+            parent.window.location.reload(true)
         } else {
             document.getElementById("error2").style.display = "block";
 
