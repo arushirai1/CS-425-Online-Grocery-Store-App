@@ -41,9 +41,17 @@
     <div class="card" style="width: 18rem;">
             <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
             <div class="card-body">
-              <h5 class="card-title">{{item['name'].capitalize()}}</h5>
-              <p class="card-text" style="color:darkgreen;">${{item['price']}}</p>
-              <a href="#" onclick="addToCart({{item['product_ID'] | safe}}, &quot;{{item['name'] | safe}}&quot;, {{item['price'] | safe}})" class="btn btn-primary">Add to Cart</a>
+                    <p class="card-text">Size: {{item['size']}}</p>
+                    {% if item['alcohol_content'] is not none %}   
+                    {% if item['alcohol_content'] != 0.00 %}   
+      
+                    <p class="card-text" style="color: red" >Alc. Content: {{item['alcohol_content']}}</p>
+                    {% endif %}
+                    {% endif %}
+      
+                    <p class="card-text" >Nutritional Value: {{item['nutritional_value']}}</p>
+                    <p class="card-text" style="color:darkgreen;">${{item['price']}}</p>
+              <a onclick="addToCart({{item['product_ID'] | safe}}, &quot;{{item['name'] | safe}}&quot;, {{item['price'] | safe}})" class="btn btn-primary">Add to Cart</a>
             </div>
     </div>
     {% endfor %}
