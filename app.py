@@ -145,8 +145,9 @@ def view_cart():
 @app.route('/payment-page', methods=["GET"])
 def get_payment_page():
     cards = db_methods.get_payment_details(db, session['user_id'])
+    addresses = db_methods.get_shipping_address(db, session['user_id'])
     #pdb.set_trace()
-    return render_template('payment.html', credit_cards = cards, shipping_addresses = [{'address_id': 2000, 'address': "test"}, {'address_id': 20001, 'address': "test2"}])
+    return render_template('payment.html', credit_cards = cards, shipping_addresses = addresses)
 
 @app.route('/init-data')
 def init_d():

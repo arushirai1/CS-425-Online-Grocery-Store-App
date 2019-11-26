@@ -44,7 +44,7 @@
 
     var editted = 000;
     var needsUpdateCard = false;
-    function editCard(credit_id, inputAddress, inputCredit, inputCity, inputState) {
+    function editCard(credit_id, inputAddress, inputCredit, inputCity, inputState, inputZip) {
         //shade the card
         document.getElementById(credit_id.toString()).style.backgroundColor="yellow"
         //delete card without refresh
@@ -52,7 +52,7 @@
 
         //populate
         addNewCreditCard();
-        document.getElementById("inputBillingZip").value = inputZip;
+        document.getElementById("inputBillingZip").value = inputZip.toString();
         document.getElementById("inputStreetAddress").value = inputAddress;
         document.getElementById("inputBillingCity").value = inputCity;
         document.getElementById("inputBillingState").value = inputState;
@@ -84,9 +84,8 @@
         inputCity = document.getElementById("inputBillingCity").value;
         inputState = document.getElementById("inputBillingState").value;
         inputCredit = document.getElementById("inputCreditCard").value;
-        inputName = document.getElementById("nameOnCard").value;
 
-        if(validateData(inputAddress, inputCredit, inputCity, inputState, inputName)) {
+        if(validateData(inputAddress, inputCredit, inputCity, inputState, inputZip)) {
             document.getElementById("addNewCreditCard").style.display = "none";
             document.getElementById("error").style.display = "none";
 
@@ -118,7 +117,7 @@
         </div>
         
         <button name="Select" onclick="selectCard({{card['credit_id'] | safe}})" type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
-        <button name="Edit" onclick='editCard({{card["credit_id"] | safe}}, {{card["street_address"] | tojson}}, {{card["card_number"] | safe}}, {{card["city"] | tojson}}, {{card["postal_state"] | tojson}}, {{card["zip"] | safe}})' type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Edit</button>
+        <button name="Edit" onclick='editCard({{card["credit_id"] | safe}}, {{card["street_address"] | tojson}}, {{card["card_number"] | safe}}, {{card["city"] | tojson}}, {{card["postal_state"] | tojson}}, {{card["zip"] | tojson}})' type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Edit</button>
         <button name="Delete" onclick="deleteCard({{card['credit_id'] | safe}})" type="button" style="width:15%;margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
     </div>
     <div style="background-color: black;size: 2pt ; border-top: 1px dashed black;"></div>
@@ -130,10 +129,6 @@
                     <label for="inputCreditCard">Credit Card Number</label>
                     <input type="text" class="form-control" id="inputCreditCard" placeholder="88888888888888">
                   </div>
-            <div class="form-group">
-              <label for="nameOnCard">Name on Card</label>
-              <input type="text" class="form-control" id="nameOnCard" placeholder="Jane Doe">
-            </div>
             <h4>Billing Address</h4> </h4>
             <div class="form-group">
                     <label for="inputStreetAddress">Street Address</label>
@@ -165,7 +160,10 @@
     
     <div style="display: flex;">
         
-        <p style="padding: 8pt; border-right: 2px solid black">{{addr['address']}}</p>
+        <div style="width: 30%; border-right: 2px solid black">
+                <p style="padding-top: 8pt;">{{addr['street_address']}}</p>
+                <p>{{addr['city']}} {{addr['postal_state']}} {{addr['zip']}} </p>        
+        </div>        
         <button name="Select" onclick="selectAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Select</button>
         <button name="Edit" onclick="editAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Edit</button>
         <button name="Delete" onclick="deleteAddr({{addr['address_id'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>        
