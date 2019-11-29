@@ -99,6 +99,7 @@ def submit_order():
         db_methods.remove_stock(db, item['product_id'], item['quantity'])
     db_methods.add_balance(db,session['user_id'],order_total)
     db_methods.create_order(db, session['user_id'], credit_id, session['cart'])
+    session['cart']=[]
     return "success"
 
 '''
@@ -260,7 +261,12 @@ def update_warehouse():
 @app.route('/view-cart', methods=["GET"])
 def view_cart():
     print("arrived")
-    return render_template('view_cart.html', cart = session['cart'])
+    max_quantities = []
+    for item in session['cart']:
+        temp = db_methods.max_quantity(db, item['product_id'])
+        print(temp)
+        max_quantities.append({'product_id': item['product_id'], 'max_quantity': temp })
+    return render_template('view_cart.html', cart = session['cart'], max_quantities= max_quantities)
 
 @app.route('/payment-page', methods=["GET"])
 def get_payment_page():

@@ -87,6 +87,11 @@ def delete_address(db, customer_id, street_address, zip_code):
 	sql_string="delete from customer_address where customer_id="+str(customer_id)+" and street_address='" + str(street_address)+"' and zip="+str(zip_code)+";"
 	db.engine.execute(sql_string)
 
+def max_quantity(db, product_id):
+	sql_string="select product_ID,sum(quantity) from Stock group by product_ID having product_ID=" +str(product_id)+ ";"
+	row=db.engine.execute(sql_string).fetchone()
+	return row.sum
+
 def is_available(db,product_id, quantity):
     sql_string="select product_ID,sum(quantity) from Stock group by product_ID having product_ID=" +str(product_id)+ ";"
     results=db.engine.execute(sql_string)
@@ -210,7 +215,14 @@ def fetch_capacity_for_product(db, product_id):
 	return product_warehouse_list
 
 def update_stock(db, product_id, stock_quantity, warehouse_id):
-	sql_string = "UPDATE stock SET quantity=" +str(stock_quantity)+  "WHERE product_id="+ str(product_id)+" and warehouse_id="+ str(warehouse_id) +";"
+	sql_string = "select count(*) from stock WHERE product_id="+ str(product_id)+" and warehouse_id="+ str(warehouse_id) +";"
+	row = db.engine.execute(sql_string).fetchone()
+	count = row.count
+	if(count == 0):
+		sql_string = "INSERT INTO stock values (" +str(warehouse_id) + ", " + str(product_id) + ", "+ str(stock_quantity) +  ");"
+	else:
+		sql_string = "UPDATE stock SET quantity=" +str(stock_quantity)+  " WHERE product_id="+ str(product_id)+" and warehouse_id="+ str(warehouse_id) +";"
+	print("SQL Str", sql_string)
 	db.engine.execute(sql_string)
 
 '''

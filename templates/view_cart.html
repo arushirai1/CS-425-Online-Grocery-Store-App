@@ -1,9 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 <script>
-function update(product_id) {
+function update(product_id, max_quantities) {
+    var item;
+    document.getElementById("error-code-max").style.display="none"
+
     console.log("Product Id: %d", product_id)
     quantity = document.getElementById("inputQuantity" + product_id).value
+    console.log(quantity)
+    for (item of max_quantities) {
+        console.log(item['max_quantity'])
+        if(parseInt(item['product_id']) == parseInt(product_id)) {
+            if(item['max_quantity'] < quantity) {
+                document.getElementById("error-code-max").style.display="block"
+                return;
+            }
+        }
+    }
+
     var params = "product_id=" + product_id + "&quantity=" + quantity;
     var xhr = new XMLHttpRequest();
 
@@ -61,7 +75,7 @@ function getTotal() {
             <label for="inputQuantity">Quantity</label>
             <input type="number" class="form-control" id="inputQuantity{{item.product_id}}" value={{item.quantity}}>
     </div>
-    <button name="Update Quantity" onclick="update({{item.product_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update Quantity</button>
+    <button name="Update Quantity" onclick='update({{item.product_id | safe}}, {{max_quantities| tojson}})' type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary"> Update Quantity</button>
     <button name="Delete" onclick="deleteItem({{item.product_id | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-danger"> Delete </button>
     <h2 style="margin: 10pt;">Price: {{item.price}}</h2>
 </div>
@@ -70,6 +84,7 @@ function getTotal() {
 <h2> Total Price: </h2>
 <h2>$<script>getTotal();</script></h2>
 
+<p id="error-code-max" style="color: red; display: none">Error, please lower the quantity</p>
 <button name="checkout" onclick="goToPayment()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success"> Checkout</button>
 
 {% endblock %}

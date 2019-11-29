@@ -30,7 +30,9 @@ function addStock(product_id) {
 
     var stock_quantity = document.getElementById("stock_quantity").value 
     var total_stock = parseInt(document.getElementById("current_quantity").innerHTML) + parseInt(stock_quantity)
-
+    console.log(total_stock)
+    console.log("Stock Quant")
+    console.log(stock_quantity)
     var amount = parseInt(document.getElementById("curr_capacity").innerHTML) + parseInt(stock_quantity)
     if(amount > parseInt(document.getElementById("max_quantity").innerHTML)) {
         document.getElementById("errorCode").style.display="block";
