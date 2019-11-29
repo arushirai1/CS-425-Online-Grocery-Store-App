@@ -3,6 +3,11 @@
 {% block content %}
     <script>
     
+    function addStockToWarehouse(product_id) {
+        document.cookie = "db-backUrl=" + window.location.href+";"
+        window.location.href = window.location.origin + "/warehouse-view?product_id=" + product_id;
+    }
+
     var existingProduct = false;
 
     function editProduct(product_id, product_name, product_type, size, alcohol_content, nutritional_value, price) {
@@ -26,10 +31,6 @@
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send();
         window.location.reload(true)
-    }
-
-    function addStockToWarehouse() {
-
     }
 
     function validateData( productName , productType , productSize, alcoholContent, nutritionalValue, productPrice) {
@@ -207,7 +208,7 @@
               <p class="card-text" >Nutritional Value: {{item['nutritional_value']}}</p>
               <p class="card-text" style="color:darkgreen;">${{item['price']}}</p>
               
-              <button name="stockToWarehouse" onclick="addStockToWarehouse({{item["product_ID"] | safe})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success">Add Stock to Warehouse</button>
+              <button name="stockToWarehouse" onclick="addStockToWarehouse({{item['product_ID'] | safe}})" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success">Add Stock to Warehouse</button>
               <a onclick='editProduct({{item["product_ID"] | safe}}, {{item["name"] | tojson}}, {{item["product_type"] | tojson}}, {{item["size"] | safe}}, {{item["alcohol_content"] | safe}}, {{item["nutritional_value"] | safe}}, {{item["price"] | safe}})' class="btn btn-primary">Edit Product</a>
               <a onclick="deleteProduct({{item['product_ID'] | safe}})" class="btn btn-danger">Delete</a>
             </div>

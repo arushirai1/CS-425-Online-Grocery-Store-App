@@ -232,7 +232,8 @@ def view_products():
         return render_template('staff_product.html', username= username, rows = categories, product_types=product_types, state=session['state'], temp=_states, password=password)
     
     #pdb.set_trace()
-    return render_template('products.html', state=state, username=username, rows=categories)
+    balance = db_methods.get_balance(db, user_id)
+    return render_template('products.html', state=state, username=username, rows=categories, balance=balance[0])
 
 @app.route('/warehouse-view')
 def view_warehouse():
@@ -250,7 +251,7 @@ def update_warehouse():
 
     db_methods.update_stock(db, product_id, stock_quantity, warehouse_id)
     return "success"
-    
+
 @app.route('/view-cart', methods=["GET"])
 def view_cart():
     print("arrived")

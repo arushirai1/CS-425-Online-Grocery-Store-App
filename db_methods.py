@@ -173,6 +173,10 @@ def remove_stock(db, product_id, order_quantity):
     else:
         return False
 
+def get_balance(db, user_id):
+	sql_string = "select balance from customer where customer_id="+ str(user_id)+";"
+	return db.engine.execute(sql_string).fetchone()
+
 def fetch_capacity(db):
 	current_capacities = []
 	sql_string = "select warehouse_id, sum(quantity) from (select * from warehouse, product) as q natural left outer join stock group by warehouse_id ORDER BY warehouse_id;"

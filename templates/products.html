@@ -26,13 +26,17 @@
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send();
     }
+
+    function logout() {
+        window.location.replace(window.location.origin+"/");
+    }
     </script>
     <h1 style="margin: 5px;">
-        Hello {{username}}, here are products from {{ state }}
+        Hello {{username}}, here are products from {{ state }}. Your balance is ${{balance}}.
     </h1>
     <div>
         <button name="cart" onclick="viewCart()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-success">Modify Cart/Checkout</button>
-        <button name="logout" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary">Logout</button>
+        <button name="logout" onclick="logout()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-primary">Logout</button>
     </div>
     {% for item in rows %}
     <h2 style="color:fuchsia; margin: 20pt">{{item.category}} </h2>
@@ -41,6 +45,7 @@
     <div class="card" style="width: 18rem;">
             <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
             <div class="card-body">
+                    <h5 class="card-title">{{item['name'].capitalize()}}</h5>
                     <p class="card-text">Size: {{item['size']}}</p>
                     {% if item['alcohol_content'] is not none %}   
                     {% if item['alcohol_content'] != 0.00 %}   
