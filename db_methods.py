@@ -173,6 +173,57 @@ def remove_stock(db, product_id, order_quantity):
     else:
         return False
 
+def fetch_capacity(db):
+	current_capacities = []
+	sql_string = "select warehouse_id, sum(quantity) from (select * from warehouse, product) as q natural left outer join stock group by warehouse_id ORDER BY warehouse_id;"
+	results = db.engine.execute(sql_string)	
+
+	for row in results:
+		item = {'warehouse_id': row.warehouse_id, 'current_capacity': row.sum}
+		current_capacities.append(item)
+	return current_capacities
+
+def fetch_all_warehouses(db):
+	sql_string = "SELECT * FROM warehouse ORDER BY warehouse_id;"
+	results = db.engine.execute(sql_string)
+
+	warehouses = []
+	for row in results:
+		warehouse = {'warehouse_id' : row.warehouse_id, 'max_capacity': row.capacity, 'address': row.street_address + ', ' + row.city + ' ' + row.postal_state + ' ' + str(row.zip) }
+		warehouses.append(warehouse)
+	return warehouses
+
+def fetch_capacity_for_product(db, product_id):
+	sql_string = "select warehouse_id, product_name, coalesce(quantity, 0) as quantity from (select * from warehouse, product) as q natural left outer join stock where product_id=" + str(product_id) + " ORDER BY warehouse_id;"
+	results =  db.engine.execute(sql_string)
+	product_warehouse_list = []
+	warehouses = fetch_capacity(db)
+	warehouse_info = fetch_all_warehouses(db)
+	for row in results:
+		item = {'product_name': row.product_name, 'warehouse_id': row.warehouse_id, 'quantity': row.quantity, 'current_cap': str(warehouses[row.warehouse_id-1]['current_capacity']), 'max_capacity': str(warehouse_info[row.warehouse_id - 1]['max_capacity']), 'address': warehouse_info[row.warehouse_id - 1]['address']}
+		product_warehouse_list.append(item)
+
+	return product_warehouse_list
+
+def update_stock(db, product_id, stock_quantity, warehouse_id):
+	sql_string = "UPDATE stock SET quantity=" +str(stock_quantity)+  "WHERE product_id="+ str(product_id)+" and warehouse_id="+ str(warehouse_id) +";"
+	db.engine.execute(sql_string)
+
+'''
+def fetch_products_in_warehouses(db):
+	sql_string = 'select warehouse_id, product_id, product_name from (warehouse natural join stock) natural join product;'
+	results = db.engine.execute(sql_string)
+	warehouses = fetch_all_warehouses(db)
+	products_warehouse_join = []
+	#prepopulate
+	for w in warehouses:
+		tmp = {'warehouse_id': w['warehouse_id'], 'products'}
+	for row in results:
+		[{}]
+		warehouses.append(warehouse)
+	return products_warehouse_join
+'''
+
 def update_products(db, product_id, product_name, product_type, size, alcohol_content, nutritional_value, price, state):
 	sql_string = "UPDATE product SET product_name='"+str(product_name) + "', product_type='" + str(product_type) +  "', size=" + str(size) +  ", alcohol_content=" + str(alcohol_content) +  ", nutritional_value=" + str(nutritional_value) +"where product_id=" + str(product_id)+";"
 	db.engine.execute(sql_string)

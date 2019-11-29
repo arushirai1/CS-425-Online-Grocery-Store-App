@@ -234,6 +234,23 @@ def view_products():
     #pdb.set_trace()
     return render_template('products.html', state=state, username=username, rows=categories)
 
+@app.route('/warehouse-view')
+def view_warehouse():
+    product_id = int(request.args.get("product_id", 0))
+
+    warehouse_list = db_methods.fetch_capacity_for_product(db, product_id)
+    print(warehouse_list)
+    return render_template('warehouse_view.html', warehouses=warehouse_list, product_id=product_id)
+
+@app.route('/update-stock')
+def update_warehouse():
+    product_id = int(request.args.get("product_id", 0))
+    stock_quantity = int(request.args.get("stock_quantity", 0))
+    warehouse_id = int(request.args.get("warehouse_id", 0))
+
+    db_methods.update_stock(db, product_id, stock_quantity, warehouse_id)
+    return "success"
+    
 @app.route('/view-cart', methods=["GET"])
 def view_cart():
     print("arrived")

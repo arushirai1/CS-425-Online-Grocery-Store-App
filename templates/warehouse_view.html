@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script>
+function fetchData(warehouses) {
+    document.getElementById("errorCode").style.display="none";
+    document.getElementById("stock_quantity").value = 0
+    if(document.getElementById("select-warehouse").value == "Select a Warehouse") {
+        document.getElementById("info-block").style.display = "none"
+        document.getElementById("current_quantity").innerHTML = 0
+        document.getElementById("max_quantity").innerHTML = 0
+        return;
+    }
+    document.getElementById("info-block").style.display = "block"
+
+    var warehouse_id = parseInt(document.getElementById("select-warehouse").value.split(',')[0])
+    var warehouse = warehouses[warehouse_id-1]
+
+    document.getElementById("current_quantity").innerHTML = warehouse['quantity']
+    document.getElementById("curr_capacity").innerHTML = warehouse['current_cap']
+
+    document.getElementById("max_quantity").innerHTML = warehouse['max_capacity']
+
+}
+
+function addStock(product_id) {
+    //get warehouse id, get 
+    var warehouse_id = parseInt(document.getElementById("select-warehouse").value.split(',')[0])
+
+    var stock_quantity = document.getElementById("stock_quantity").value 
+    var total_stock = parseInt(document.getElementById("current_quantity").innerHTML) + parseInt(stock_quantity)
+
+    var amount = parseInt(document.getElementById("curr_capacity").innerHTML) + parseInt(stock_quantity)
+    if(amount > parseInt(document.getElementById("max_quantity").innerHTML)) {
+        document.getElementById("errorCode").style.display="block";
+        return;
+    }
+
+    var params = "warehouse_id="+warehouse_id+"&stock_quantity="+total_stock+"&product_id="+product_id
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", '/update-stock?'+ params, true);       
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send();
+    window.location.reload();
+}
+
+</script>
+
+<button name="goback" onclick="goBack()" type="button" style="margin: 5pt; margin-bottom: 10pt;" class="btn btn-secondary">Exit</button>
+<h1 style="margin-top: 2pt">Add {{warehouses[0]['product_name'].capitalize()}} Stock to Warehouse</h1>
+<div style="border-bottom: 2px black solid; margin-bottom: 10pt"></div>
+<div class="input-group mb-3" style="width: 30%;">
+    <div class="input-group-prepend">
+            <label class="input-group-text" for="select_state_products">Warehouse</label>
+    </div>
+    <select onchange='fetchData({{warehouses | tojson}})' class="custom-select" id="select-warehouse">
+        
+        <option selected>Select a Warehouse</option>
+
+        {% for warehouse in warehouses %}
+            <option value={{warehouse['warehouse_id'] | tojson}}>{{warehouse['warehouse_id']}}, {{warehouse['address']}}</option>
+        {% endfor%}
+
+    </select>
+</div>
+<div id="info-block" style="display: none;">
+    <div style="display: flex;"> <h3>Current Quanitity:</h3><h3 id="current_quantity" style="margin-left: 3pt">0 </h3> 
+    </div>
+    <div style="display: flex;"><p>Current Capacity of Warehouse: </p><p id="curr_capacity" style="margin-left: 3pt">0 </p></div>
+
+    <div style="display: flex;"><p>Maximum Capacity of Warehouse: </p><p id="max_quantity" style="margin-left: 3pt">0 </p></div>
+    <label for="stock_quantity">How Much Stock do you want to add?</label>
+    <input type="number" style="width: 10%;" class="form-control" id="stock_quantity" min="0" step="1" placeholder="1">
+</div>
+
+<p id="errorCode" style="color: red; display: none;">You have exceeded capacity, please change the amount of stock you would like to add.</p>
+<button name="addstock" onclick="addStock({{product_id | safe}})" type="button" style="margin-top: 20pt; margin-bottom: 10pt;" class="btn btn-success"> Add Stock to Warehouse</button>
+
+
+
+{% endblock %}
