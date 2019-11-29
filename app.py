@@ -93,6 +93,11 @@ def submit_order():
     tmp = session['addresses'][addr_id]
     #insert method to delete address
     print("submit_order")
+    order_total = 0
+    for item in session['cart']:
+        order_total += item['quantity'] * item['price']
+        db_methods.remove_stock(db, item['product_id'], item['quantity'])
+    db_methods.add_balance(db,session['user_id'],order_total)
     db_methods.create_order(db, session['user_id'], credit_id, session['cart'])
     return "success"
 
